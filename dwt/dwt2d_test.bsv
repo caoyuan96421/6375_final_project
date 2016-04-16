@@ -3,21 +3,20 @@ import GetPut::*;
 import Vector::*;
 import FixedPoint::*;
 import FShow::*;
-import DWT1DSF::*;
-import DWT2DSF::*;
+import DWT2DML::*;
 import DWTTypes::*;
 
 typedef 16 N;
 typedef 16 M;
 typedef 4 B;
 typedef 4 T;
+typedef 2 L;
 
       
 // Unit test for DWT module
 (* synthesize *)
 module mkDWT2DTest (Empty);
-	DWT1D#(N,B) dwt1d <- mkDWT1DSF;
-	DWT2D#(N,M,B) dwt2d <- mkDWT2DSF(dwt1d);
+	DWT2DML#(N,M,B,L) dwt2d <- mkDWT2DML();
 	
 	Reg#(Bool) m_inited <- mkReg(False);
     Reg#(File) m_in <- mkRegU();
@@ -36,7 +35,7 @@ module mkDWT2DTest (Empty);
     endrule
 
 
-    rule read(m_inited && m_line_in < fromInteger(valueOf(M)));
+    rule read(m_inited && m_line_in < fromInteger(valueOf(M)) && t<fromInteger(valueOf(T)));
         //$display("Send in line %d", m_line_in);
         Vector#(B, Sample) x;
         
@@ -60,6 +59,7 @@ module mkDWT2DTest (Empty);
     rule newtest (m_inited && m_line_in == fromInteger(valueOf(M)));
     	m_line_in <= 0;
     	t <= t+1;
+    	$display("Test case %d", t);
     endrule
     
     rule write(m_inited && m_line_out < fromInteger(valueOf(N)*valueOf(M)/valueOf(B)*valueOf(T)));
@@ -74,7 +74,7 @@ module mkDWT2DTest (Empty);
     	m_line_out <= m_line_out + 1;
     endrule
     
-    rule finish(m_inited && m_line_in == fromInteger(valueOf(M)) && m_line_out == fromInteger(valueOf(N)*valueOf(M)/valueOf(B)*valueOf(T)) && t==fromInteger(valueOf(T)));
+    rule finish(m_inited && m_line_out == fromInteger(valueOf(N)*valueOf(M)/valueOf(B)*valueOf(T)) && t==fromInteger(valueOf(T)));
 //    	$fclose(m_in);
 //    	$fclose(m_out);
     	$display("Done");

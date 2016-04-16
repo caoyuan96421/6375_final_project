@@ -9,8 +9,8 @@ import GetPut::*;
 typedef Bit#(12) Sample;
 
 // Wavelet Transformed sample
-typedef 12 WI;
-typedef 20 WF;
+typedef 14 WI;
+typedef 22 WF;
 typedef FixedPoint#(WI,WF) WSample;
 typedef FixedPoint#(2,WF) DWTCoef;
 
@@ -20,10 +20,7 @@ typedef 2048 MAX_LINE;
 typedef 8 BLOCK_SIZE;
 
 
-typedef Bit#(TAdd#(TLog#(n),1)) Size_t#(numeric type n);
-
-//typedef Size_t#(MAX_LINE) Size_line;
-//typedef Size_t#(MAX_SAMPLE) Size_sample;
+typedef Bit#(TLog#(n)) Size_t#(numeric type n);
 
 typedef Server#(
 	Vector#(p, WSample),
@@ -32,6 +29,7 @@ typedef Server#(
 
 typedef DWT#(p) DWT1D#(numeric type n, numeric type p);
 typedef DWT#(p) DWT2D#(numeric type n, numeric type m, numeric type p);
+typedef DWT#(p) DWT2DML#(numeric type n, numeric type m, numeric type p, numeric type l);
 
 /*interface DWT1D#(numeric type n);
 	interface DWT#(n) data;
