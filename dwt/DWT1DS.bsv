@@ -1,9 +1,7 @@
 import Vector::*;
 import Complex::*;
 import FixedPoint::*;
-import Types::*;
 import FShow::*;
-import MemTypes::*;
 import ClientServer::*;
 import FIFO::*;
 import SpecialFIFOs::*;

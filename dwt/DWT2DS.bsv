@@ -1,9 +1,7 @@
 import Vector::*;
 import Complex::*;
 import FixedPoint::*;
-import Types::*;
 import FShow::*;
-import MemTypes::*;
 import ClientServer::*;
 import FIFO::*;
 import FIFOF::*;
@@ -33,12 +31,6 @@ e----+------------O----------+------------O
       \          /            \          /
 o------O--------+--------------O--------+
 */
-
-(* synthesize *)
-module mkDWT1DSFixed(DWT1D#(BLOCK_SIZE));
-	DWT1D#(BLOCK_SIZE) m <- mkDWT1DS;
-	return m;
-endmodule
 
 
 // n is block size
