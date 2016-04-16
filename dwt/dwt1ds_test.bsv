@@ -3,18 +3,20 @@ import GetPut::*;
 import Vector::*;
 import FixedPoint::*;
 import FShow::*;
-import DWT1DS::*;
+import DWT1DSF::*;
 import DWTTypes::*;
 
 typedef 64 N;
       
 typedef 8 B;
 typedef TDiv#(N, B) M;
+
+Integer t=4;
       
 // Unit test for DWT module
 (* synthesize *)
 module mkDWT1DSTest (Empty);
-	DWT1D#(B) dwt1d <- mkDWT1DS;
+	DWT#(B) dwt1d <- mkDWT1DSF(valueOf(N));
 	
 	Reg#(Bool) m_inited <- mkReg(False);
     Reg#(Bool) m_doneread <- mkReg(False);
@@ -23,14 +25,12 @@ module mkDWT1DSTest (Empty);
 	Reg#(Bit#(4)) flip <- mkReg(0);	
 	rule init(!m_inited);
 		m_inited <= True;
-
-		dwt1d.start(fromInteger(valueOf(N)));
 		$display("Start @ %t",$time);
     endrule
 
 
-    rule read(m_inited && m_line_in < fromInteger(valueOf(M)));
-        //$display("Send in line %d", m_line_in);
+    rule read(m_inited && m_line_in < fromInteger(t*valueOf(M)));
+        $display("%t Feed line %d", $time, m_line_in);
         if(flip==0) begin
 		    Vector#(B, Sample) x;
 		    $write("%t Input %d: ", $time, m_line_in);
@@ -40,15 +40,15 @@ module mkDWT1DSTest (Empty);
 		    end
 		    $display("");
 		    
-		    dwt1d.data.request.put(toWSample(x));
+		    dwt1d.request.put(toWSample(x));
 		    
 		    m_line_in <= m_line_in + 1;
 		end
-		flip <= flip+1;
+		//flip <= flip+1;
     endrule
     
-    rule write(m_inited && m_line_out < fromInteger(valueOf(M)));
-    	let x <- dwt1d.data.response.get();
+    rule write(m_inited && m_line_out < fromInteger(t*valueOf(M)));
+    	let x <- dwt1d.response.get();
     	
     	$write("%t Output %d: ", $time, m_line_out);
         for(Integer i=0;i<valueOf(B);i=i+1)begin
@@ -59,7 +59,7 @@ module mkDWT1DSTest (Empty);
     	m_line_out <= m_line_out + 1;
     endrule
     
-    rule finish(m_inited && m_line_in == fromInteger(valueOf(M)) && m_line_out == fromInteger(valueOf(M)));
+    rule finish(m_inited && m_line_in == fromInteger(t*valueOf(M)) && m_line_out == fromInteger(t*valueOf(M)));
     	$display("%t Done", $time);
     	$finish;
     endrule

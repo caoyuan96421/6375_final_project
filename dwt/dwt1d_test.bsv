@@ -7,18 +7,19 @@ import DWT1D::*;
 import DWTTypes::*;
 
 typedef 8 N;
+typedef 4 B;
       
 // Unit test for DWT module
 (* synthesize *)
 module mkDWT1DTest (Empty);
 
-   DWT#(N) dwt1 <- mkDWT1D;
+   DWT#(B) dwt1 <- mkDWT1D;
    
    Reg#(Bool) passed <- mkReg(True);
    Reg#(Bit#(32)) feed <- mkReg(0);
    Reg#(Bit#(32)) check <- mkReg(0);
 	
-   function Action dofeed(Vector#(N,Sample) x);
+   function Action dofeed(Vector#(B,Sample) x);
       action
          dwt1.request.put(toWSample(x));
 	 //$display("Feed: ",feed);
@@ -26,13 +27,13 @@ module mkDWT1DTest (Empty);
       endaction
    endfunction
    
-   function Action docheck(Vector#(N, WSample) wnt);
+   function Action docheck(Vector#(B, WSample) wnt);
       action
          let x <- dwt1.response.get;
 	 	 $display("Check");
 	 	 Bool correct = True;
-	 	 Vector#(N, WSample) diff = replicate(0);
-	 	 for(Integer i=0; i<valueOf(N); i=i+1)begin
+	 	 Vector#(B, WSample) diff = replicate(0);
+	 	 for(Integer i=0; i<valueOf(B); i=i+1)begin
 	 	 	diff[i]=x[i]-wnt[i];
 	 	 	if(diff[i] < fromReal(-1e-2) || diff[i] > fromReal(1e-2))
 	 	 		correct = False;
@@ -47,7 +48,7 @@ module mkDWT1DTest (Empty);
       endaction
    endfunction
 
-   Vector#(N, Sample) in1 = replicate(0);
+   Vector#(B, Sample) in1 = replicate(0);
    in1[0]=1;
    in1[1]=2;
    in1[2]=3;
@@ -57,7 +58,7 @@ module mkDWT1DTest (Empty);
    in1[6]=7;
    in1[7]=8;
    
-   Vector#(N, Sample) in2  = replicate(0);
+   Vector#(B, Sample) in2  = replicate(0);
    
    in2[0]=10;
    in2[1]=35;
@@ -68,7 +69,7 @@ module mkDWT1DTest (Empty);
    in2[6]=204;
    in2[7]=1;
 
-   Vector#(N, Sample) in3  = replicate(0);
+   Vector#(B, Sample) in3  = replicate(0);
    
    in3[0]=0;
    in3[1]=1;
@@ -79,7 +80,7 @@ module mkDWT1DTest (Empty);
    in3[6]=0;
    in3[7]=0;
    
-   Vector#(N, WSample) out1  = replicate(0);
+   Vector#(B, WSample) out1  = replicate(0);
    
    out1[0]=fromReal(1.8861);
    out1[1]=fromReal(4.3463);
@@ -90,7 +91,7 @@ module mkDWT1DTest (Empty);
    out1[6]=fromReal(-0.1291);
    out1[7]=fromReal(0.6117);
    
-   Vector#(N, WSample) out2  = replicate(0);
+   Vector#(B, WSample) out2  = replicate(0);
    
    out2[0]=fromReal(33.6433);
    out2[1]=fromReal(33.5332);
@@ -101,7 +102,7 @@ module mkDWT1DTest (Empty);
    out2[6]=fromReal(-39.5466);
    out2[7]=fromReal(52.0065);
    
-   Vector#(N, WSample) out3  = replicate(0);
+   Vector#(B, WSample) out3  = replicate(0);
    
    out3[0]=fromReal(0.4859);
    out3[1]=fromReal(1.6215);

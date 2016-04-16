@@ -20,18 +20,10 @@ typedef 2048 MAX_LINE;
 typedef 8 BLOCK_SIZE;
 
 
-typedef Bit#(TAdd#(TLog#(n),1)) Size_t#(numeric type n);
+typedef Bit#(TLog#(n)) Size_t#(numeric type n);
 
 typedef Size_t#(MAX_LINE) Size_line;
 typedef Size_t#(MAX_SAMPLE) Size_sample;
-
-// Array with size information. n is maximum size
-//typedef Tuple2#(Size_t#(n),Vector#(n,t)) Line#(numeric type n,type t);
-
-/*typedef Server#(
-	Line#(n,Sample),
-	Vector#(n,WSample)
-) DWT1D#(numeric type n);*/
 
 typedef Server#(
 	Vector#(n, WSample),
