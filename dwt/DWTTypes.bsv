@@ -20,17 +20,20 @@ typedef 2048 MAX_LINE;
 typedef 8 BLOCK_SIZE;
 
 
-typedef Bit#(TLog#(n)) Size_t#(numeric type n);
+typedef Bit#(TAdd#(TLog#(n),1)) Size_t#(numeric type n);
 
-typedef Size_t#(MAX_LINE) Size_line;
-typedef Size_t#(MAX_SAMPLE) Size_sample;
+//typedef Size_t#(MAX_LINE) Size_line;
+//typedef Size_t#(MAX_SAMPLE) Size_sample;
 
 typedef Server#(
-	Vector#(n, WSample),
-	Vector#(n, WSample)
-) DWT#(numeric type n);
+	Vector#(p, WSample),
+	Vector#(p, WSample)
+) DWT#(numeric type p);
 
-interface DWT1D#(numeric type n);
+typedef DWT#(p) DWT1D#(numeric type n, numeric type p);
+typedef DWT#(p) DWT2D#(numeric type n, numeric type m, numeric type p);
+
+/*interface DWT1D#(numeric type n);
 	interface DWT#(n) data;
 	method Action start(Size_sample l);
 endinterface
@@ -39,6 +42,7 @@ interface DWT2D#(numeric type n);
 	interface DWT#(n) data;
 	method Action start(Size_sample l, Size_line m);
 endinterface
+*/
 
 // Convert Sample in to WSample
 function Vector#(n,WSample) toWSample(Vector#(n,Sample) in);

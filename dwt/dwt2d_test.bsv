@@ -3,20 +3,21 @@ import GetPut::*;
 import Vector::*;
 import FixedPoint::*;
 import FShow::*;
-import DWT1DS::*;
-import DWT2DS::*;
+import DWT1DSF::*;
+import DWT2DSF::*;
 import DWTTypes::*;
 
-typedef 16 L;
+typedef 16 N;
 typedef 16 M;
 typedef 4 B;
+typedef 4 T;
 
       
 // Unit test for DWT module
 (* synthesize *)
 module mkDWT2DTest (Empty);
-	DWT1D#(B) dwt1d <- mkDWT1DS;
-	DWT2D#(B) dwt2d <- mkDWT2DS(dwt1d);
+	DWT1D#(N,B) dwt1d <- mkDWT1DSF;
+	DWT2D#(N,M,B) dwt2d <- mkDWT2DSF(dwt1d);
 	
 	Reg#(Bool) m_inited <- mkReg(False);
     Reg#(File) m_in <- mkRegU();
@@ -25,13 +26,13 @@ module mkDWT2DTest (Empty);
 	Reg#(Bit#(32)) m_sample_in <- mkReg(0);
 	Reg#(Bit#(32)) m_line_in <- mkReg(0);
 	Reg#(Bit#(32)) m_line_out <- mkReg(0);
+	Reg#(Bit#(4)) t <- mkReg(0);
 	
 	rule init(!m_inited);
 		m_inited <= True;
-		dwt2d.start(fromInteger(valueOf(L)), fromInteger(valueOf(M)));
 		$display("%t Start",$time);
 		
-		m_sample_in <= fromInteger(valueOf(L)/valueOf(B));
+		m_sample_in <= fromInteger(valueOf(N)/valueOf(B));
     endrule
 
 
@@ -41,23 +42,28 @@ module mkDWT2DTest (Empty);
         
         $write("%t Input %d %d: ", $time, m_line_in, m_sample_in);
         for(Integer i=0;i<valueOf(B);i=i+1)begin
-			x[i] = truncate(fromInteger(i)+fromInteger(valueOf(B))*(fromInteger(valueOf(L)/valueOf(B))-m_sample_in) + fromInteger(valueOf(L))*m_line_in + 1);
+			x[i] = truncate(fromInteger(i)+fromInteger(valueOf(B))*(fromInteger(valueOf(N)/valueOf(B))-m_sample_in) + fromInteger(valueOf(N))*m_line_in + 1);
 			$write("%d ",x[i]);
         end
         $display("");
         
-        dwt2d.data.request.put(toWSample(x));
+        dwt2d.request.put(toWSample(x));
         
         if(m_sample_in == 1)begin    
 	        m_line_in <= m_line_in + 1;
-	        m_sample_in <= fromInteger(valueOf(L)/valueOf(B));
+	        m_sample_in <= fromInteger(valueOf(N)/valueOf(B));
 	    end
 	    else 
 	    	m_sample_in <= m_sample_in - 1;
     endrule
     
-    rule write(m_inited && m_line_out < fromInteger(valueOf(M)*valueOf(B)));
-    	let x <- dwt2d.data.response.get();
+    rule newtest (m_inited && m_line_in == fromInteger(valueOf(M)));
+    	m_line_in <= 0;
+    	t <= t+1;
+    endrule
+    
+    rule write(m_inited && m_line_out < fromInteger(valueOf(N)*valueOf(M)/valueOf(B)*valueOf(T)));
+    	let x <- dwt2d.response.get();
     	
     	$write("Output %d: ", m_line_out);
         for(Integer i=0;i<valueOf(B);i=i+1)begin
@@ -68,7 +74,7 @@ module mkDWT2DTest (Empty);
     	m_line_out <= m_line_out + 1;
     endrule
     
-    rule finish(m_inited && m_line_in == fromInteger(valueOf(M)) && m_line_out == fromInteger(valueOf(M)*valueOf(B)));
+    rule finish(m_inited && m_line_in == fromInteger(valueOf(M)) && m_line_out == fromInteger(valueOf(N)*valueOf(M)/valueOf(B)*valueOf(T)) && t==fromInteger(valueOf(T)));
 //    	$fclose(m_in);
 //    	$fclose(m_out);
     	$display("Done");

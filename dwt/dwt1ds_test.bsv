@@ -11,12 +11,14 @@ typedef 64 N;
 typedef 8 B;
 typedef TDiv#(N, B) M;
 
-Integer t=4;
+Integer t=16;
+
+// Took 137 cycles for 16*8=128 conversions -> approaching one conversion/cycle because of fully pipelining
       
 // Unit test for DWT module
 (* synthesize *)
 module mkDWT1DSTest (Empty);
-	DWT#(B) dwt1d <- mkDWT1DSF(valueOf(N));
+	DWT1D#(N,B) dwt1d <- mkDWT1DSF();
 	
 	Reg#(Bool) m_inited <- mkReg(False);
     Reg#(Bool) m_doneread <- mkReg(False);

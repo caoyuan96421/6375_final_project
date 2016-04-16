@@ -87,10 +87,9 @@ o------O--------+--------------O--------+
 // p is block size, 
 // n is # of samples in a line
 // Fully pipelined
-module mkDWT1DSF(Integer n, DWT#(p) ifc) provisos(Add#(1, a__, TDiv#(p, 2)), Add#(1, b__, p), Add#(TDiv#(p, 2), TDiv#(p, 2), p));
+module mkDWT1DSF(DWT1D#(n,p)) provisos(Add#(1, a__, TDiv#(p, 2)), Add#(1, b__, p), Add#(TDiv#(p, 2), TDiv#(p, 2), p));
 
-	Integer b=valueOf(p);
-	Integer nb=n/b;
+	Integer np=valueOf(TDiv#(n,p));
 
 	Vector#(6, MultAdder#(TDiv#(p,2))) multadder;
 	multadder[0] <- mkMultAdder(fromReal(cdf97_LiftFilter_a));
@@ -114,10 +113,10 @@ module mkDWT1DSF(Integer n, DWT#(p) ifc) provisos(Add#(1, a__, TDiv#(p, 2)), Add
 	
 	FIFO#(Vector#(p, WSample)) iscfifo <- mkFIFO;
 	
-	Reg#(Size_sample) count1 <- mkReg(fromInteger(nb-1));
-	Reg#(Size_sample) count2 <- mkReg(0);
-	Reg#(Size_sample) count3 <- mkReg(fromInteger(nb-1));
-	Reg#(Size_sample) count4 <- mkReg(0);
+	Reg#(Size_t#(n)) count1 <- mkReg(fromInteger(np-1));
+	Reg#(Size_t#(n)) count2 <- mkReg(0);
+	Reg#(Size_t#(n)) count3 <- mkReg(fromInteger(np-1));
+	Reg#(Size_t#(n)) count4 <- mkReg(0);
 	
 	Reg#(WSample) s1save <- mkRegU;
 	Reg#(WSample) s3save <- mkRegU;
@@ -125,7 +124,7 @@ module mkDWT1DSF(Integer n, DWT#(p) ifc) provisos(Add#(1, a__, TDiv#(p, 2)), Add
     (* fire_when_enabled *)	
 	rule feed1;
 `ifdef SIM
-		$display("%t Feed 1",$time);
+		//$display("%t Feed 1",$time);
 `endif
 		let x = ififo.first; ififo.deq;
 		i1fifo.enq(x);
@@ -134,7 +133,7 @@ module mkDWT1DSF(Integer n, DWT#(p) ifc) provisos(Add#(1, a__, TDiv#(p, 2)), Add
 	(* fire_when_enabled *)	
 	rule feed3;
 `ifdef SIM
-		$display("%t Feed 3",$time);
+		//$display("%t Feed 3",$time);
 `endif
 		let x = i25fifo.first; i25fifo.deq;
 		i3fifo.enq(x);
@@ -142,7 +141,7 @@ module mkDWT1DSF(Integer n, DWT#(p) ifc) provisos(Add#(1, a__, TDiv#(p, 2)), Add
 	
 	rule stage1;
 `ifdef SIM
-		$display("%t DWT1D: Stage 1 count %d",$time, count1);
+		//$display("%t DWT1D: Stage 1 count %d",$time, count1);
 `endif
 		let s = i1fifo.first; i1fifo.deq;
 		let s0 = evenArray(s);
@@ -160,7 +159,7 @@ module mkDWT1DSF(Integer n, DWT#(p) ifc) provisos(Add#(1, a__, TDiv#(p, 2)), Add
 		i2xfifo.enq(s1save);
 		s1save <= last(c); // Save last element in stage 1
 		
-		count1 <= (count1 == 0) ? fromInteger(nb-1) : count1 - 1;
+		count1 <= (count1 == 0) ? fromInteger(np-1) : count1 - 1;
 	endrule
 	
 	rule stage2;
@@ -168,7 +167,7 @@ module mkDWT1DSF(Integer n, DWT#(p) ifc) provisos(Add#(1, a__, TDiv#(p, 2)), Add
 		let s = i2fifo.first; i2fifo.deq;
 		
 `ifdef SIM
-		$display("%t DWT1D: Stage 2 count %d",$time, count2);
+		//$display("%t DWT1D: Stage 2 count %d",$time, count2);
 		//$write("%t Result from stage 1: ", $time);
 		//for(Integer i=0;i<valueOf(p);i=i+1)begin
 		//	fxptWrite(7,s[i]);$write(" ");
@@ -184,7 +183,7 @@ module mkDWT1DSF(Integer n, DWT#(p) ifc) provisos(Add#(1, a__, TDiv#(p, 2)), Add
 		
 		i25fifo.enq(append(c, s1));
 		
-		count2 <= (count2 == fromInteger(nb-1)) ? 0 : count2 + 1;
+		count2 <= (count2 == fromInteger(np-1)) ? 0 : count2 + 1;
 	endrule
 	
 	rule stage3;
@@ -192,7 +191,7 @@ module mkDWT1DSF(Integer n, DWT#(p) ifc) provisos(Add#(1, a__, TDiv#(p, 2)), Add
 		let s = i3fifo.first; i3fifo.deq;
 		
 `ifdef SIM
-		$display("%t DWT1D: Stage 3 count %d",$time, count3);
+		//$display("%t DWT1D: Stage 3 count %d",$time, count3);
 		//$write("%t Result from stage 2: ", $time);
 		//for(Integer i=0;i<valueOf(p);i=i+1)begin
 		//	fxptWrite(7,s[i]);$write(" ");
@@ -215,7 +214,7 @@ module mkDWT1DSF(Integer n, DWT#(p) ifc) provisos(Add#(1, a__, TDiv#(p, 2)), Add
 		i4xfifo.enq(s3save);
 		s3save <= last(c); // Save last element in stage 1
 		
-		count3 <= (count3 == 0) ? fromInteger(nb-1) : count3 - 1;
+		count3 <= (count3 == 0) ? fromInteger(np-1) : count3 - 1;
 	endrule
 	
 	rule stage4;
@@ -223,7 +222,7 @@ module mkDWT1DSF(Integer n, DWT#(p) ifc) provisos(Add#(1, a__, TDiv#(p, 2)), Add
 		let s = i4fifo.first; i4fifo.deq;
 		
 `ifdef SIM
-		$display("%t DWT1D: Stage 4 count %d",$time, count4);
+		//$display("%t DWT1D: Stage 4 count %d",$time, count4);
 		//$write("%t Result from stage 3: ", $time);
 		//for(Integer i=0;i<valueOf(p);i=i+1)begin
 		//	fxptWrite(7,s[i]);$write(" ");
@@ -239,7 +238,7 @@ module mkDWT1DSF(Integer n, DWT#(p) ifc) provisos(Add#(1, a__, TDiv#(p, 2)), Add
 		
 		iscfifo.enq(append(c, s1));
 		
-		count4 <= (count4 == fromInteger(nb-1)) ? 0 : count4 + 1;
+		count4 <= (count4 == fromInteger(np-1)) ? 0 : count4 + 1;
 	endrule
 	
 	rule stagesc;
@@ -247,7 +246,7 @@ module mkDWT1DSF(Integer n, DWT#(p) ifc) provisos(Add#(1, a__, TDiv#(p, 2)), Add
 		let s = iscfifo.first;
 		
 `ifdef SIM
-		$display("%t DWT1D: Stage sc",$time);
+		//$display("%t DWT1D: Stage sc",$time);
 		//$write("%t Result from stage 4: ", $time);
 		//for(Integer i=0;i<valueOf(p);i=i+1)begin
 		//	fxptWrite(7,s[i]);$write(" ");
