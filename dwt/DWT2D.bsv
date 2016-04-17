@@ -82,6 +82,7 @@ module mkDWT2DP(DWT1D#(n, p) dwt1d, DWT2D#(n, m, p) ifc) provisos (Add#(1, a__, 
 	Reg#(Size_t#(m)) line_4 <- mkReg(0);
 	Reg#(Size_t#(m)) line_sc <- mkReg(0);
 	Reg#(Bool) ff_sc <- mkReg(False);
+	Reg#(Bool) ff_ass <- mkReg(False);
 	
 	(* fire_when_enabled *)
 	rule fetch;
@@ -105,12 +106,12 @@ module mkDWT2DP(DWT1D#(n, p) dwt1d, DWT2D#(n, m, p) ifc) provisos (Add#(1, a__, 
 		end
 		
 `ifdef SIM
-		//$write("%t DWT2D: DWT1D output: %d %d: ", $time, line_fetch, sample_fetch);
-		//for(Integer i=0;i<valueOf(p);i=i+1)begin
-		//	fxptWrite(4, x[i]);
-		//	$write(" ");
-		//end
-		//$display("");
+		$write("%t DWT2D: DWT1D output: %d %d: ", $time, line_fetch, sample_fetch);
+		for(Integer i=0;i<valueOf(p);i=i+1)begin
+			fxptWrite(4, x[i]);
+			$write(" ");
+		end
+		$display("");
 `endif
 	endrule
 	
@@ -142,12 +143,12 @@ module mkDWT2DP(DWT1D#(n, p) dwt1d, DWT2D#(n, m, p) ifc) provisos (Add#(1, a__, 
 		end
 		
 `ifdef SIM
-		//$write("%t DWT2D: Stage1 %d %d: ", $time, line_1, sample_1);
-		//for(Integer i=0;i<valueOf(p);i=i+1)begin
-		//	fxptWrite(4, c[i]);
-		//	$write(" ");
-		//end
-		//$display("");
+		$write("%t DWT2D: Stage1 %d %d: ", $time, line_1, sample_1);
+		for(Integer i=0;i<valueOf(p);i=i+1)begin
+			fxptWrite(4, c[i]);
+			$write(" ");
+		end
+		$display("");
 `endif
 	endrule
 	
@@ -183,12 +184,12 @@ module mkDWT2DP(DWT1D#(n, p) dwt1d, DWT2D#(n, m, p) ifc) provisos (Add#(1, a__, 
 		end
 		
 `ifdef SIM
-		//$write("%t DWT2D: Stage2 %d %d: ", $time, line_2, sample_2);
-		//for(Integer i=0;i<valueOf(p);i=i+1)begin
-		//	fxptWrite(4, c[i]);
-		//	$write(" ");
-		//end
-		//$display("");
+		$write("%t DWT2D: Stage2 %d %d: ", $time, line_2, sample_2);
+		for(Integer i=0;i<valueOf(p);i=i+1)begin
+			fxptWrite(4, c[i]);
+			$write(" ");
+		end
+		$display("");
 `endif
 	endrule
 
@@ -220,12 +221,12 @@ module mkDWT2DP(DWT1D#(n, p) dwt1d, DWT2D#(n, m, p) ifc) provisos (Add#(1, a__, 
 		end
 		
 `ifdef SIM
-		//$write("%t DWT2D: Stage3 %d %d: ", $time, line_3, sample_3);
-		//for(Integer i=0;i<valueOf(p);i=i+1)begin
-		//	fxptWrite(4, c[i]);
-		//	$write(" ");
-		//end
-		//$display("");
+		$write("%t DWT2D: Stage3 %d %d: ", $time, line_3, sample_3);
+		for(Integer i=0;i<valueOf(p);i=i+1)begin
+			fxptWrite(4, c[i]);
+			$write(" ");
+		end
+		$display("");
 `endif
 	endrule
 	
@@ -258,12 +259,12 @@ module mkDWT2DP(DWT1D#(n, p) dwt1d, DWT2D#(n, m, p) ifc) provisos (Add#(1, a__, 
 		end
 		
 `ifdef SIM
-		//$write("%t DWT2D: Stage4 %d %d: ", $time, line_4, sample_4);
-		//for(Integer i=0;i<valueOf(p);i=i+1)begin
-		//	fxptWrite(4, c[i]);
-		//	$write(" ");
-		//end
-		//$display("");
+		$write("%t DWT2D: Stage4 %d %d: ", $time, line_4, sample_4);
+		for(Integer i=0;i<valueOf(p);i=i+1)begin
+			fxptWrite(4, c[i]);
+			$write(" ");
+		end
+		$display("");
 `endif
 	endrule
 	
@@ -300,34 +301,71 @@ module mkDWT2DP(DWT1D#(n, p) dwt1d, DWT2D#(n, m, p) ifc) provisos (Add#(1, a__, 
 	(* fire_when_enabled *)
 	rule stagescass;
 		
-		if((line_sc & 1) == 0) begin
-			if(sample_sc < fromInteger(np/2))begin
-				// Output LL
-				ofifo.enq(append(safifos[0].first,safifos[1].first));
-				safifos[0].deq;
-				safifos[1].deq;
+		if(np > 1)begin
+			if((line_sc & 1) == 0) begin
+				if(sample_sc < fromInteger(np/2))begin
+					// Output LL
+					ofifo.enq(append(safifos[0].first,safifos[1].first));
+					safifos[0].deq;
+					safifos[1].deq;
+				end
+				else begin
+					// Output LH
+					ofifo.enq(append(safifos[2].first,safifos[3].first));
+					safifos[2].deq;
+					safifos[3].deq;
+				end
 			end
 			else begin
-				// Output LH
-				ofifo.enq(append(safifos[2].first,safifos[3].first));
-				safifos[2].deq;
-				safifos[3].deq;
+				if(sample_sc < fromInteger(np/2))begin
+					// Output HL
+					ofifo.enq(append(safifos[4].first,safifos[5].first));
+					safifos[4].deq;
+					safifos[5].deq;
+				end
+				else begin
+					// Output HH
+					ofifo.enq(append(safifos[6].first,safifos[7].first));
+					safifos[6].deq;
+					safifos[7].deq;
+				end
 			end
 		end
 		else begin
-			if(sample_sc < fromInteger(np/2))begin
-				// Output HL
-				ofifo.enq(append(safifos[4].first,safifos[5].first));
-				safifos[4].deq;
-				safifos[5].deq;
+			// When there is only one block per line, we just assemble it as how it was disassembled
+			// $display("%t NP=1, ff_ass=%b", $time, ff_ass);
+			if(!ff_ass)begin
+				if((line_sc & 1) == 0) begin
+					// Output LL+LH
+					ofifo.enq(append(safifos[0].first, safifos[2].first));
+					safifos[0].deq;
+					safifos[2].deq;
+				end
+				else begin
+					// Output HL+HH
+					ofifo.enq(append(safifos[4].first, safifos[6].first));
+					safifos[4].deq;
+					safifos[6].deq;
+					ff_ass <= !ff_ass;
+				end
 			end
 			else begin
-				// Output HH
-				ofifo.enq(append(safifos[6].first,safifos[7].first));
-				safifos[6].deq;
-				safifos[7].deq;
+				if((line_sc & 1) == 0) begin
+					// Output LL+LH
+					ofifo.enq(append(safifos[1].first, safifos[3].first));
+					safifos[1].deq;
+					safifos[3].deq;
+				end
+				else begin
+					// Output HL+HH
+					ofifo.enq(append(safifos[5].first, safifos[7].first));
+					safifos[5].deq;
+					safifos[7].deq;
+					ff_ass <= !ff_ass;
+				end
 			end
 		end
+		
 		
 		if(sample_sc == fromInteger(np - 1))begin
 			line_sc <= (line_sc == fromInteger(valueOf(m)-1)) ? 0 : line_sc + 1;

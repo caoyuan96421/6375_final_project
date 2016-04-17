@@ -3,22 +3,22 @@ import GetPut::*;
 import Vector::*;
 import FixedPoint::*;
 import FShow::*;
-import DWT1DSF::*;
+import DWT1D::*;
 import DWTTypes::*;
 
-typedef 64 N;
+typedef 4 N;
       
-typedef 8 B;
+typedef 4 B;
 typedef TDiv#(N, B) M;
 
-Integer t=16;
+Integer t=32;
 
 // Took 137 cycles for 16*8=128 conversions -> approaching one conversion/cycle because of fully pipelining
       
 // Unit test for DWT module
 (* synthesize *)
 module mkDWT1DSTest (Empty);
-	DWT1D#(N,B) dwt1d <- mkDWT1DSF();
+	DWT1D#(N,B) dwt1d <- mkDWT1D();
 	
 	Reg#(Bool) m_inited <- mkReg(False);
     Reg#(Bool) m_doneread <- mkReg(False);
