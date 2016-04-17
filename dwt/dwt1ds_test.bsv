@@ -6,7 +6,7 @@ import FShow::*;
 import DWT1D::*;
 import DWTTypes::*;
 
-typedef 4 N;
+typedef 8 N;
       
 typedef 4 B;
 typedef TDiv#(N, B) M;
@@ -18,7 +18,7 @@ Integer t=32;
 // Unit test for DWT module
 (* synthesize *)
 module mkDWT1DSTest (Empty);
-	DWT1D#(N,B) dwt1d <- mkDWT1D();
+	DWT1D#(N,B) dwt1d <- mkIDWT1D();
 	
 	Reg#(Bool) m_inited <- mkReg(False);
     Reg#(Bool) m_doneread <- mkReg(False);
