@@ -7,7 +7,7 @@ bsc-link-options:    -keep-fires +RTS -K2147483648 -RTS
 hide-target
 top-module:            mkBridge
 top-file:              ../Bridge.bsv
-bsv-source-directories:  .. ../.. ../../.. ../../../includes
+bsv-source-directories:  .. ../..
 verilog-directory:     vlog_dut
 binary-directory:      bdir_dut
 simulation-directory:  simdir_dut

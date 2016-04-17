@@ -35,7 +35,8 @@ module mkDWT2DML(DWT2DML#(n, m, p, l))
 	if(valueOf(l)>5)begin DWT2D#(TDiv#(n,32), TDiv#(m,32), p) dwt <- mkDWT2D; dwt2ds[5] = dwt; end
 	if(valueOf(l)>6)begin DWT2D#(TDiv#(n,64), TDiv#(m,64), p) dwt <- mkDWT2D; dwt2ds[6] = dwt; end
 	
-	Vector#(l, FIFO#(Vector#(p, WSample))) buffer <- replicateM(mkSizedBRAMFIFO(valueOf(n)/valueOf(p) * 10 + 2));
+	// For each additional level added, 4 more lines must be buffered in each level
+	Vector#(l, FIFO#(Vector#(p, WSample))) buffer <- replicateM(mkSizedBRAMFIFO(5*valueOf(l)*np + 8));
 	
 	Vector#(l, Reg#(Size_t#(n))) sample <- replicateM(mkReg(0));
 	Vector#(l, Reg#(Size_t#(m))) line <- replicateM(mkReg(0));	

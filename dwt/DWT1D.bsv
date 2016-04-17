@@ -299,6 +299,15 @@ module mkIDWT1D(DWT1D#(n,p)) provisos(Add#(1, a__, TDiv#(p, 2)), Add#(1, b__, p)
 	rule stagesc;
 		let s = ififo.first; ififo.deq;
 		
+`ifdef SIM
+		$display("%t IDWT1D: Stage sc",$time);
+		$write("%t Result from IDWT2D: ", $time);
+		for(Integer i=0;i<valueOf(p);i=i+1)begin
+			fxptWrite(7,s[i]);$write(" ");
+		end
+		$display("");
+`endif
+
 		Vector#(TDiv#(p,2), WSample) lf = take(s); // LF part
 		Vector#(TDiv#(p,2), WSample) hf = takeTail(s); // HF part
 		

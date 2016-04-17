@@ -10,7 +10,7 @@ typedef Bit#(12) Sample;
 
 // Wavelet Transformed sample
 typedef 14 WI;
-typedef 22 WF;
+typedef 18 WF;
 typedef FixedPoint#(WI,WF) WSample;
 typedef FixedPoint#(2,WF) DWTCoef;
 

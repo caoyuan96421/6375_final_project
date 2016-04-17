@@ -3,6 +3,7 @@ import GetPut::*;
 import Vector::*;
 import FixedPoint::*;
 import FShow::*;
+import DWT2D::*;
 import DWT2DML::*;
 import DWTTypes::*;
 
@@ -10,13 +11,14 @@ typedef 16 N;
 typedef 16 M;
 typedef 4 B;
 typedef 4 T;
-typedef 2 L;
+typedef 1 L;
 
       
 // Unit test for DWT module
 (* synthesize *)
 module mkDWT2DTest (Empty);
-	DWT2DML#(N,M,B,L) dwt2d <- mkDWT2DML();
+	//DWT2DML#(N,M,B,L) dwt2d <- mkDWT2DML();
+	DWT2D#(N,M,B) dwt2d <- mkIDWT2D();
 	
 	Reg#(Bool) m_inited <- mkReg(False);
     Reg#(File) m_in <- mkRegU();

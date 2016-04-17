@@ -54,14 +54,15 @@ void runtest(InportProxyT<DWT_Line>& port){
 
 int out_count = 0;
 bool passed = true;
-const float eps = 5e-2;
+const float releps = 0.01;
+const float abseps = 0.2;
 void out_cb(void* x, const DWT_Line& data){
 	int j=out_count / (N/P);
 	int i=(out_count % (N/P))*P;
 	bool unitpassed=true;
 	for(int k=0;k<P;k++){
 		float x = fromWSample(data[k]);
-		if(fabs(x-out_data[i+k][j]) > eps)
+		if(fabs((x-out_data[i+k][j])/out_data[i+k][j]) > releps && fabs(x-out_data[i+k][j]) > abseps)
 			unitpassed = false;
 	}
 	if(!unitpassed){
