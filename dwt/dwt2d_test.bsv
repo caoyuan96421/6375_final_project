@@ -6,11 +6,11 @@ import FShow::*;
 import DWT2DML::*;
 import DWTTypes::*;
 
-typedef 2 N;
-typedef 2 M;
-typedef 2 B;
+typedef 16 N;
+typedef 16 M;
+typedef 4 B;
 typedef 4 T;
-typedef 1 L;
+typedef 2 L;
 
       
 // Unit test for DWT module

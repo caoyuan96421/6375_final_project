@@ -9,38 +9,21 @@ import Xilinx::*;
 import Vector::*;
 
 import DWTTypes::*;
-import DWT1DS::*;
-import DWT2DS::*;
+import DWT2DML::*;
 
-typedef 8 N;
-typedef Vector#(N, WSample) DWT_Line;
+typedef 2048 N;
+typedef 2048 M;
+typedef 8 P;
+typedef 3 L;
+typedef Vector#(P, WSample) DWT_Line;
 
-interface DutInterface;
-	interface DWT#(N) data;
-	interface Put#(Tuple2#(Size_sample,Size_line)) start;
-endinterface
-
-(* synthesize *)
-module mkDWT1DSFixed(DWT1D#(N));
-	DWT1D#(N) m <- mkDWT1DS;
-	return m;
-endmodule
-
-(* synthesize *)
-module mkDWT2DSFixed(DWT2D#(N));
-    DWT1D#(N) dwt1d <- mkDWT1DSFixed;
-	DWT2D#(N) m <- mkDWT2DS(dwt1d);
-	return m;
-endmodule
+typedef DWT#(P) DutInterface;
 
 (* synthesize *)
 module [Module] mkDutWrapper (DutInterface);
-    DWT2D#(N) dwt2d <- mkDWT2DSFixed;
+    DWT2DML#(N,M,P,L) dwt2d <- mkDWT2DML;
 
-	interface DWT data = dwt2d.data;
-	interface Put start;
-		method Action put(Tuple2#(Size_sample,Size_line) t) = dwt2d.start(tpl_1(t), tpl_2(t));
-	endinterface
+	return dwt2d;
 endmodule
 
 
@@ -51,8 +34,7 @@ module [SceMiModule] mkSceMiLayer(Empty);
 
     DutInterface dut <- buildDutWithSoftReset(mkDutWrapper, clk_port_scemi);
 
-    Empty datalink <- mkServerXactor(dut.data, clk_port_scemi);
-    Empty start <- mkPutXactor(dut.start, clk_port_scemi);
+    Empty datalink <- mkServerXactor(dut, clk_port_scemi);
 
     Empty shutdown <- mkShutdownXactor();
 endmodule
