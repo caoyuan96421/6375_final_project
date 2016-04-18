@@ -12,8 +12,8 @@ using namespace std;
 #include "SceMiHeaders.h"
 #include "ResetXactor.h"
 
-const int N=2048;
-const int M=2048;
+const int N=1024;
+const int M=1024;
 const int P=8;
 const int L=3;
 
