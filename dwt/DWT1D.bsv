@@ -281,7 +281,7 @@ module mkIDWT1D(DWT1D#(n,p)) provisos(Add#(1, a__, TDiv#(p, 2)), Add#(1, b__, p)
     (* fire_when_enabled *)	
 	rule feed2;
 `ifdef SIM
-		$display("%t Feed 2",$time);
+		//$display("%t Feed 2",$time);
 `endif
 		let x = i15fifo.first; i15fifo.deq;
 		i2fifo.enq(x);
@@ -290,7 +290,7 @@ module mkIDWT1D(DWT1D#(n,p)) provisos(Add#(1, a__, TDiv#(p, 2)), Add#(1, b__, p)
 	(* fire_when_enabled *)	
 	rule feed4;
 `ifdef SIM
-		$display("%t Feed 4",$time);
+		//$display("%t Feed 4",$time);
 `endif
 		let x = i35fifo.first; i35fifo.deq;
 		i4fifo.enq(x);
@@ -300,12 +300,12 @@ module mkIDWT1D(DWT1D#(n,p)) provisos(Add#(1, a__, TDiv#(p, 2)), Add#(1, b__, p)
 		let s = ififo.first; ififo.deq;
 		
 `ifdef SIM
-		$display("%t IDWT1D: Stage sc",$time);
-		$write("%t Result from IDWT2D: ", $time);
-		for(Integer i=0;i<valueOf(p);i=i+1)begin
-			fxptWrite(7,s[i]);$write(" ");
-		end
-		$display("");
+		//$display("%t IDWT1D: Stage sc",$time);
+		//$write("%t Result from IDWT2D: ", $time);
+		//for(Integer i=0;i<valueOf(p);i=i+1)begin
+		//	fxptWrite(7,s[i]);$write(" ");
+		//end
+		//$display("");
 `endif
 
 		Vector#(TDiv#(p,2), WSample) lf = take(s); // LF part
@@ -321,12 +321,12 @@ module mkIDWT1D(DWT1D#(n,p)) provisos(Add#(1, a__, TDiv#(p, 2)), Add#(1, b__, p)
 		let s = i1fifo.first; i1fifo.deq;
 		
 `ifdef SIM
-		$display("%t IDWT1D: Stage 1 count %d",$time, count1);
-		$write("%t Result from stage sc: ", $time);
-		for(Integer i=0;i<valueOf(p);i=i+1)begin
-			fxptWrite(7,s[i]);$write(" ");
-		end
-		$display("");
+		//$display("%t IDWT1D: Stage 1 count %d",$time, count1);
+		//$write("%t Result from stage sc: ", $time);
+		//for(Integer i=0;i<valueOf(p);i=i+1)begin
+		///	fxptWrite(7,s[i]);$write(" ");
+		//end
+		//$display("");
 `endif
 
 		Vector#(TDiv#(p,2), WSample) s0 = take(s); // LF part
@@ -354,12 +354,12 @@ module mkIDWT1D(DWT1D#(n,p)) provisos(Add#(1, a__, TDiv#(p, 2)), Add#(1, b__, p)
 		let s = i2fifo.first; i2fifo.deq;
 		
 `ifdef SIM
-		$display("%t IDWT1D: Stage 2 count %d",$time, count2);
-		$write("%t Result from stage 1: ", $time);
-		for(Integer i=0;i<valueOf(p);i=i+1)begin
-			fxptWrite(7,s[i]);$write(" ");
-		end
-		$display("");
+		//$display("%t IDWT1D: Stage 2 count %d",$time, count2);
+		//$write("%t Result from stage 1: ", $time);
+		//for(Integer i=0;i<valueOf(p);i=i+1)begin
+		//	fxptWrite(7,s[i]);$write(" ");
+		//end
+		//$display("");
 `endif
 
 		Vector#(TDiv#(p,2), WSample) s0 = take(s); // Even part
@@ -383,12 +383,12 @@ module mkIDWT1D(DWT1D#(n,p)) provisos(Add#(1, a__, TDiv#(p, 2)), Add#(1, b__, p)
 		let s = i3fifo.first; i3fifo.deq;
 		
 `ifdef SIM
-		$display("%t IDWT1D: Stage 3 count %d",$time, count3);
-		$write("%t Result from stage 2: ", $time);
-		for(Integer i=0;i<valueOf(p);i=i+1)begin
-			fxptWrite(7,s[i]);$write(" ");
-		end
-		$display("");
+		//$display("%t IDWT1D: Stage 3 count %d",$time, count3);
+		//$write("%t Result from stage 2: ", $time);
+		//for(Integer i=0;i<valueOf(p);i=i+1)begin
+		//	fxptWrite(7,s[i]);$write(" ");
+		//end
+		//$display("");
 `endif
 
 		Vector#(TDiv#(p,2), WSample) s0 = take(s); // Even part
@@ -417,12 +417,12 @@ module mkIDWT1D(DWT1D#(n,p)) provisos(Add#(1, a__, TDiv#(p, 2)), Add#(1, b__, p)
 		let s = i4fifo.first; i4fifo.deq;
 		
 `ifdef SIM
-		$display("%t IDWT1D: Stage 4 count %d",$time, count4);
-		$write("%t Result from stage 3: ", $time);
-		for(Integer i=0;i<valueOf(p);i=i+1)begin
-			fxptWrite(7,s[i]);$write(" ");
-		end
-		$display("");
+		//$display("%t IDWT1D: Stage 4 count %d",$time, count4);
+		//$write("%t Result from stage 3: ", $time);
+		//for(Integer i=0;i<valueOf(p);i=i+1)begin
+		//	fxptWrite(7,s[i]);$write(" ");
+		//end
+		//$display("");
 `endif
 
 		Vector#(TDiv#(p,2), WSample) s0 = take(s); // Even part

@@ -459,12 +459,12 @@ module mkIDWT2DP(DWT1D#(n, p) idwt1d, DWT2D#(n, m, p) ifc) provisos (Add#(1, a__
 		end
 		
 `ifdef SIM
-		$write("%t IDWT2D %d: Stage scale: %d %d: ", $time, valueOf(n), line_sc, sample_sc);
-		for(Integer i=0;i<valueOf(p);i=i+1)begin
-			fxptWrite(4, c[i]);
-			$write(" ");
-		end
-		$display("");
+		//$write("%t IDWT2D %d: Stage scale: %d %d: ", $time, valueOf(n), line_sc, sample_sc);
+		//for(Integer i=0;i<valueOf(p);i=i+1)begin
+		//	fxptWrite(4, c[i]);
+		//	$write(" ");
+		//end
+		//$display("");
 `endif
 	endrule
 	
@@ -501,12 +501,12 @@ module mkIDWT2DP(DWT1D#(n, p) idwt1d, DWT2D#(n, m, p) ifc) provisos (Add#(1, a__
 		end
 		
 `ifdef SIM
-		$write("%t IDWT2D %d: Stage1 %d %d: ", $time, valueOf(n), line_1, sample_1);
-		for(Integer i=0;i<valueOf(p);i=i+1)begin
-			fxptWrite(4, c[i]);
-			$write(" ");
-		end
-		$display("");
+		//$write("%t IDWT2D %d: Stage1 %d %d: ", $time, valueOf(n), line_1, sample_1);
+		//for(Integer i=0;i<valueOf(p);i=i+1)begin
+		//	fxptWrite(4, c[i]);
+		//	$write(" ");
+		//end
+		//$display("");
 `endif
 	endrule
 	
@@ -537,12 +537,12 @@ module mkIDWT2DP(DWT1D#(n, p) idwt1d, DWT2D#(n, m, p) ifc) provisos (Add#(1, a__
 		end
 		
 `ifdef SIM
-		$write("%t IDWT2D %d: Stage2 %d %d: ", $time, valueOf(n), line_2, sample_2);
-		for(Integer i=0;i<valueOf(p);i=i+1)begin
-			fxptWrite(4, c[i]);
-			$write(" ");
-		end
-		$display("");
+		//$write("%t IDWT2D %d: Stage2 %d %d: ", $time, valueOf(n), line_2, sample_2);
+		//for(Integer i=0;i<valueOf(p);i=i+1)begin
+		//	fxptWrite(4, c[i]);
+		//	$write(" ");
+		//end
+		//$display("");
 `endif
 	endrule
 
@@ -579,12 +579,12 @@ module mkIDWT2DP(DWT1D#(n, p) idwt1d, DWT2D#(n, m, p) ifc) provisos (Add#(1, a__
 		end
 		
 `ifdef SIM
-		$write("%t IDWT2D %d: Stage3 %d %d: ", $time, valueOf(n), line_3, sample_3);
-		for(Integer i=0;i<valueOf(p);i=i+1)begin
-			fxptWrite(4, c[i]);
-			$write(" ");
-		end
-		$display("");
+		///$write("%t IDWT2D %d: Stage3 %d %d: ", $time, valueOf(n), line_3, sample_3);
+		//for(Integer i=0;i<valueOf(p);i=i+1)begin
+		//	fxptWrite(4, c[i]);
+		//	$write(" ");
+		//end
+		//$display("");
 `endif
 	endrule
 	
@@ -603,19 +603,28 @@ module mkIDWT2DP(DWT1D#(n, p) idwt1d, DWT2D#(n, m, p) ifc) provisos (Add#(1, a__
 		
 		let c = multadder[3].request(a1, a0, a2);
 		
-		if(sample_4 < fromInteger(np/2)) begin
-			// LF component in each line
+		if(np > 1)begin
+			if(sample_4 < fromInteger(np/2)) begin
+				// LF component in each line
+				srfifos[0].enq(take(a0));
+				srfifos[2].enq(takeTail(a0));
+				srfifos[4].enq(take(c));
+				srfifos[6].enq(takeTail(c));
+			end
+			else begin
+				// HF component in each line
+				srfifos[1].enq(take(a0));
+				srfifos[3].enq(takeTail(a0));
+				srfifos[5].enq(take(c));
+				srfifos[7].enq(takeTail(c));
+			end
+		end
+		else begin
+			// No distribution
 			srfifos[0].enq(take(a0));
 			srfifos[2].enq(takeTail(a0));
 			srfifos[4].enq(take(c));
 			srfifos[6].enq(takeTail(c));
-		end
-		else begin
-			// HF component in each line
-			srfifos[1].enq(take(a0));
-			srfifos[3].enq(takeTail(a0));
-			srfifos[5].enq(take(c));
-			srfifos[7].enq(takeTail(c));
 		end
 		
 		if(sample_4 == fromInteger(np-1))begin
@@ -628,12 +637,12 @@ module mkIDWT2DP(DWT1D#(n, p) idwt1d, DWT2D#(n, m, p) ifc) provisos (Add#(1, a__
 		
 		
 `ifdef SIM
-		$write("%t IDWT2D %d: Stage4 %d %d: ", $time, valueOf(n), line_4, sample_4);
-		for(Integer i=0;i<valueOf(p);i=i+1)begin
-			fxptWrite(4, c[i]);
-			$write(" ");
-		end
-		$display("");
+		//$write("%t IDWT2D %d: Stage4 %d %d: ", $time, valueOf(n), line_4, sample_4);
+		//for(Integer i=0;i<valueOf(p);i=i+1)begin
+		//	fxptWrite(4, c[i]);
+		//	$write(" ");
+		//end
+		//$display("");
 `endif
 	endrule
 	
