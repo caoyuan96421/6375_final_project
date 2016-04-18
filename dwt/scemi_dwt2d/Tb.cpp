@@ -62,7 +62,9 @@ void out_cb(void* x, const DWT_Line& data){
 	bool unitpassed=true;
 	for(int k=0;k<P;k++){
 		float x = fromWSample(data[k]);
-		if(fabs((x-out_data[i+k][j])/out_data[i+k][j]) > releps && fabs(x-out_data[i+k][j]) > abseps)
+//		float y = out_data[i+k][j];
+		float y = in_data[i+k][j];
+		if(fabs((x-y)/y) > releps && fabs(x-y) > abseps)
 			unitpassed = false;
 	}
 	if(!unitpassed){
@@ -73,10 +75,12 @@ void out_cb(void* x, const DWT_Line& data){
 		}
 		cout<<" --> ";
 		for(int k=0;k<P;k++){
-			cout<<out_data[i+k][j]<<" ";
+			cout<<in_data[i+k][j]<<" ";
+			//cout<<out_data[i+k][j]<<" ";
 		}
 		cout<<endl;
 	}
+	putchar('#');
 	
 	out_count ++;
 	

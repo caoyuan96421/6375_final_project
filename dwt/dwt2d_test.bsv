@@ -7,10 +7,10 @@ import DWT2D::*;
 import DWT2DML::*;
 import DWTTypes::*;
 
-typedef 16 N;
-typedef 16 M;
-typedef 4 B;
-typedef 4 T;
+typedef 256 N;
+typedef 256 M;
+typedef 8 B;
+typedef 1 T;
 typedef 3 L;
 
       

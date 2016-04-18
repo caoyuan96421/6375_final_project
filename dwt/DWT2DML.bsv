@@ -99,8 +99,8 @@ module mkIDWT2DMLP(
 	
 	Integer np = valueOf(n) / valueOf(p);
 	
-	// For each additional level added, 4 more lines in the LAST LEVEL must be buffered in each level
-		Vector#(l, FIFO#(Vector#(p, WSample))) buffer <- replicateM(mkSizedBRAMFIFO(4*valueOf(TExp#(TSub#(l,1)))*np + 8));
+	// For each additional level added, 5 more lines in the LAST LEVEL must be buffered in each level
+		Vector#(l, FIFO#(Vector#(p, WSample))) buffer <- replicateM(mkSizedBRAMFIFO(5*valueOf(TExp#(TSub#(l,1)))*np + 8));
 	
 	Vector#(l, Reg#(Size_t#(n))) sample <- replicateM(mkReg(0));
 	Vector#(l, Reg#(Size_t#(m))) line <- replicateM(mkReg(0));	
