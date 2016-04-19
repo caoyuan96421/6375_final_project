@@ -1,0 +1,40 @@
+[DEFAULT]
+default-targets:     bsim_dut tb
+bsc-compile-options: -aggressive-conditions -keep-fires -show-schedule +RTS -K2147483648 -RTS -steps-warn-interval 100000 -steps-max-intervals 100
+bsc-link-options:    -Xc++ -O0 -keep-fires +RTS -K2147483648 -RTS
+bsv-define: SIM
+
+[common]
+hide-target
+top-module:             mkBridge
+top-file:               ../Bridge.bsv
+bsv-source-directories: .. ../..
+verilog-directory:      vlog_dut
+binary-directory:       bdir_dut
+simulation-directory:   simdir_dut
+info-directory:         info_dut
+altera-directory:       quartus
+xilinx-directory:       xilinx
+scemi-parameters-file:  scemi.params
+
+[dut]
+hide-target
+extends-target: common
+
+[bsim_dut]
+extends-target:             dut
+build-for:                  bluesim
+scemi-type:                 TCP
+scemi-tcp-port:             3579
+exe-file:		    bsim_dut
+
+[tb]
+extends-target:       common
+scemi-tb
+build-for:            c++
+c++-header-directory: tbinclude
+c++-header-aliases
+c++-files:            ../Tb.cpp ../ResetXactor.cpp
+c++-options:          -O0
+exe-file:             tb
+
