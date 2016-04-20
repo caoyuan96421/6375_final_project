@@ -43,6 +43,8 @@ module mkHuffmanLoopBack (HuffmanLoopBack#(p) ifc);
    rule d_to_vect;
       let x <- d.response.get();
       Vector#(p,Coeff) outVect = replicate(0);
+      $display("count:",count);
+      //$display("coeff:",x);
       if (count == fromInteger(valueOf(TSub#(p,1)))) begin
 	 for (Integer i = 0; i < valueOf(TSub#(p,1)); i=i+1) begin
 	    outVect[i] = storeVect[i];
