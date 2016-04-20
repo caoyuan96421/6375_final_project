@@ -13,39 +13,67 @@ typedef struct {
         } Encoding  deriving (Bits,Eq);
 
 typedef Server#(
-		Coeff,
-		Bit#(1)
-		)Encode;
+		Vector#(p,Coeff),
+		Byte
+		)Encode#(numeric type p);
 
-(* synthesize *)
-module mkEncoder(Encode ifc);
-   Fifo#(2,Coeff) inputFIFO <- mkCFFifo;
-   Fifo#(44,Bit#(1)) outputFIFO <- mkCFFifo; //scaled so that 2 coeffs = 44 bits
+function Bool can_write (Vector#(63,Reg#(Maybe#(Bit#(1)))) bitBuffer,Reg#(Bit#(6)) w_index);
+   if (isValid(bitBuffer[w_index])) begin
+      return False;
+   end
+   else begin
+      if (w_index + 22 < 63) begin
+	 if (isValid(bitBuffer[w_index + 22])) return False;
+	 else return True;
+      end
+      else begin
+	 
+	 if (isValid(bitBuffer[w_index + 22-63])) return False;
+	 else return True;
+      end
+   end
+endfunction
+
+//(* synthesize *)
+module mkEncoder(Encode#(p) ifc);
+   Fifo#(2,Vector#(p,Coeff)) inputFIFO <- mkCFFifo;
+   Fifo#(11,Byte) outputFIFO <- mkCFFifo; //scaled so that 2*p coeffs = 11*p bytes
+   Reg#(Bit#(6)) coeff_count <- mkReg(0);
    Reg#(Bit#(6)) count <- mkReg(0);
    Reg#(Bit#(6)) maxCountReg <- mkReg(0);
    Reg#(Bit#(6)) valueReg <- mkReg(0);
    Reg#(Bit#(16)) coeffReg <- mkReg(0);
-   Fifo#(2,Encoding) encodingFIFO <- mkCFFifo;
+   Reg#(Vector#(p,Encoding)) currEncoding <- mkRegU;
+   Fifo#(2,Vector#(p,Encoding)) encodingFIFO <- mkCFFifo; //this fifo should also change size
+   Vector#(63,Reg#(Maybe#(Bit#(1)))) bitBuffer <- replicateM(mkReg(Invalid));
+   Reg#(Bit#(6)) w_index <- mkReg(0);
+   Reg#(Bit#(6)) r_index <- mkReg(0);
+   
 
    rule map2encoding;
-      let inCoeff = fxptGetInt(inputFIFO.first);
-      //$display("from the input fifo:",inCoeff);
-      Bit#(16) inCoeffB = pack(inCoeff);
-      //$display("as bits:",inCoeff);
+      Vector#(p,Encoding) encoding;
+      for (Integer i = 0; i <  valueof(p); i=i+1) begin
+	 let inCoeff = fxptGetInt(inputFIFO.first[i]);
+	 $display("coeff in:",inCoeff);
+	 Bit#(16) inCoeffB = pack(inCoeff);
+	 //values are backward here so read forward at end.
+	 //coeffs should be fipped on the decoder side.
+	 case (inCoeff)
+	    0: encoding[i] = Encoding{size:2,value:6'b000001, coeff: ?};       
+	    1: encoding[i] = Encoding{size:4,value:6'b000011, coeff: ?};
+	    -1:encoding[i] = Encoding{size:4,value:6'b001011, coeff: ?};
+	    2: encoding[i] = Encoding{size:5,value:6'b000111, coeff: ?};
+	    -2:encoding[i] = Encoding{size:5,value:6'b010111, coeff: ?};
+	    3: encoding[i] = Encoding{size:6,value:6'b001111, coeff: ?};
+	    -3:encoding[i] = Encoding{size:6,value:6'b101111, coeff: ?};
+	    -4:encoding[i] = Encoding{size:6,value:6'b011111, coeff: ?};
+	    default:encoding[i] = Encoding{size:22,value:6'b111111, coeff:inCoeffB};
+	 endcase
+      end
+      $display("encoding vector:",encoding);
       inputFIFO.deq;
-      //values are backward here so read forward at end.
-      //coeffs should be fipped on the decoder side.
-      case (inCoeff)
-	 0: encodingFIFO.enq(Encoding{size:2,value:6'b000001, coeff: ?});       
-	 1: encodingFIFO.enq(Encoding{size:4,value:6'b000011, coeff: ?});
-	 -1:encodingFIFO.enq(Encoding{size:4,value:6'b001011, coeff: ?});
-	 2: encodingFIFO.enq(Encoding{size:5,value:6'b000111, coeff: ?});
-	 -2:encodingFIFO.enq(Encoding{size:5,value:6'b010111, coeff: ?});
-	 3: encodingFIFO.enq(Encoding{size:6,value:6'b001111, coeff: ?});
-	 -3:encodingFIFO.enq(Encoding{size:6,value:6'b101111, coeff: ?});
-	 -4:encodingFIFO.enq(Encoding{size:6,value:6'b011111, coeff: ?});
-	 default:encodingFIFO.enq(Encoding{size:22,value:6'b111111, coeff:inCoeffB});
-      endcase
+      encodingFIFO.enq(encoding);
+      
    endrule
 /*
    rule bitChunk;
@@ -65,8 +93,8 @@ module mkEncoder(Encode ifc);
          count <= 0;
       end
    endrule
-*/
-   rule load_bitChunk_v2;
+
+   rule bitChunk_v2;
       Bit#(6) value = 0;
       Bit#(16) coeff = 0;
       if (count == 0) begin
@@ -101,9 +129,84 @@ module mkEncoder(Encode ifc);
       valueReg <= value;
       coeffReg <= coeff;
    endrule
+   */
    
+   //conflicts with buffer_read, we make writes higher priority
+   (* descending_urgency = "bitChunk_v3, buffer_read" *)
+   rule bitChunk_v3 (can_write(bitBuffer,w_index)); //aggressive blocking for now
+      Bit#(6) value = 0;
+      Bit#(16) coeff = 0;
+      Encoding curr = Encoding{size:?,value:?,coeff:?};
+      $display("coeff count:",coeff_count);
+      $display("w index:", w_index);
+      $display("valid?:", isValid(bitBuffer[w_index+curr.size-1]));
+      if (coeff_count == 0) begin
+	 currEncoding <= encodingFIFO.first;
+	 if (!isValid(bitBuffer[w_index+curr.size-1])) encodingFIFO.deq;
+	 curr = encodingFIFO.first[0];
+      end
+      else begin
+	 curr = currEncoding[coeff_count];
+      end
+      for (Integer j = 0; j < 63; j=j+1) begin
+	 $display("w bit buffer:",fshow(bitBuffer[j]));
+      end
+      $display("curr size:%d,curr value %b",curr.size, curr.value);
+      for (Integer i = 0; i < 22; i=i+1) begin
+	 if (fromInteger(i) < curr.size) begin
+	    Maybe#(Bit#(1)) newBit = ?;
+	    if (i < 6) begin
+	       newBit = tagged Valid curr.value[i];
+	    end
+	    else begin
+	       newBit = tagged Valid curr.coeff[i-6];
+	    end
+	    Bit#(6) newIndex = w_index + fromInteger(i);
+	    //if (w_index + fromInteger(i) < 44)
+	    ///	  newIndex = w_index + fromInteger(i);
+	    //      else
+	    //	  newIndex = w_index + fromInteger(i)-44;
+	    bitBuffer[newIndex] <= newBit;
+	 end
+      end
+      if (w_index + curr.size > 63) begin //*fromInteger(valueOf(p))) begin
+	 w_index <= (w_index + curr.size) - 63;//*fromInteger(valueOf(p));
+	 $display("wrap:",w_index + 22 - 63);
+      end
+      else begin
+	 w_index <= w_index + curr.size;
+      end
+      
+      if (coeff_count == fromInteger(valueOf(p))) begin
+	 coeff_count <= 0;
+      end
+      else begin
+	 coeff_count <= coeff_count + 1;
+      end
+
+   endrule
+
+   rule buffer_read (isValid(bitBuffer[r_index]) && isValid(bitBuffer[r_index+3])); 
+      Byte out = 0;
+      $display("reading, r index:",r_index);
+      for (Integer j = 0; j < 63; j=j+1) begin
+	 $display("r bit buffer:",fshow(bitBuffer[j]));
+      end
+      for (Integer i = 0; i < 4; i=i+1) begin
+	 out[i] = fromMaybe(?,bitBuffer[r_index + fromInteger(i)]);
+	 bitBuffer[r_index+fromInteger(i)] <= tagged Invalid;
+      end
+      if (r_index + 3 > 63) begin //*fromInteger(valueOf(p))) begin
+	 r_index <= (r_index + 4) - 63;//*fromInteger(valueOf(p));
+      end
+      else begin
+	 r_index <= r_index + 4;
+      end
+      outputFIFO.enq(out);
+   endrule
+  
    interface Put request;
-      method Action put (Coeff x);
+      method Action put (Vector#(p,Coeff) x);
 	 inputFIFO.enq(x);
       endmethod
    endinterface
