@@ -204,3 +204,49 @@ module mkIDWT2DML(DWT2DML#(n, m, p, l))
 	
 	return m;
 endmodule
+
+module mkDWT2DMLI(DWT2DMLI#(n, m, p, l))
+			provisos (	
+				Add#(l, a__, 7),
+				Div#(n, TMul#(p, TExp#(l)), TDiv#(n, TMul#(p, TExp#(l)))),
+				Div#(m, TExp#(l), TDiv#(m, TExp#(l))),
+				Add#(1, b__, TMul#(p, TAdd#(WI, WF))),
+				Add#(1, c__, TMul#(TDiv#(p,2), TAdd#(WI, WF))),
+				Add#(TDiv#(p,2), TDiv#(p,2), p),
+				Add#(1, d__, TDiv#(p,2)),
+				Add#(1, e__, p)
+				);
+	DWT2DML#(n, m, p, l) m <- mkDWT2DML;
+	interface Put request;
+		method Action put(Vector#(p, Sample) x)=m.request.put(toWSample(x));
+	endinterface
+	interface Get response;
+		method ActionValue#(Vector#(p, QSample)) get();
+			let x <- m.response.get();
+			return fromWSample(x);
+		endmethod
+	endinterface
+endmodule
+
+module mkIDWT2DMLI(IDWT2DMLI#(n, m, p, l))
+			provisos (	
+				Add#(l, a__, 7),
+				Div#(n, TMul#(p, TExp#(l)), TDiv#(n, TMul#(p, TExp#(l)))),
+				Div#(m, TExp#(l), TDiv#(m, TExp#(l))),
+				Add#(1, b__, TMul#(p, TAdd#(WI, WF))),
+				Add#(1, c__, TMul#(TDiv#(p,2), TAdd#(WI, WF))),
+				Add#(TDiv#(p,2), TDiv#(p,2), p),
+				Add#(1, d__, TDiv#(p,2)),
+				Add#(1, e__, p)
+				);
+	DWT2DML#(n, m, p, l) m <- mkIDWT2DML;
+	interface Put request;
+		method Action put(Vector#(p, QSample) x)=m.request.put(toWSample(x));
+	endinterface
+	interface Get response;
+		method ActionValue#(Vector#(p, Sample)) get();
+			let x <- m.response.get();
+			return fromWSample(x);
+		endmethod
+	endinterface
+endmodule

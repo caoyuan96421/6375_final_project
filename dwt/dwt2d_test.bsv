@@ -7,9 +7,9 @@ import DWT2D::*;
 import DWT2DML::*;
 import DWTTypes::*;
 
-typedef 256 N;
-typedef 256 M;
-typedef 8 B;
+typedef 32 N;
+typedef 32 M;
+typedef 4 B;
 typedef 1 T;
 typedef 3 L;
 
@@ -17,13 +17,13 @@ typedef 3 L;
 // Unit test for DWT module
 (* synthesize *)
 module mkDWT2DTest (Empty);
-	DWT2DML#(N,M,B,L) dwt2d <- mkDWT2DML();
-	DWT2DML#(N,M,B,L) idwt2d <- mkIDWT2DML();
+	DWT2DMLI#(N,M,B,L) dwt2d <- mkDWT2DMLI();
+	IDWT2DMLI#(N,M,B,L) idwt2d <- mkIDWT2DMLI();
 	
 	Reg#(Bool) m_inited <- mkReg(False);
-    Reg#(File) m_in <- mkRegU();
-    Reg#(File) m_out <- mkRegU();
-    Reg#(Bool) m_doneread <- mkReg(False);
+	Reg#(File) m_in <- mkRegU();
+	Reg#(File) m_out <- mkRegU();
+	Reg#(Bool) m_doneread <- mkReg(False);
 	Reg#(Bit#(32)) m_sample_in <- mkReg(0);
 	Reg#(Bit#(32)) m_line_in <- mkReg(0);
 	Reg#(Bit#(32)) m_line_out <- mkReg(0);
@@ -48,12 +48,12 @@ module mkDWT2DTest (Empty);
         
         $write("%t Input %d %d: ", $time, m_line_in, m_sample_in);
         for(Integer i=0;i<valueOf(B);i=i+1)begin
-			x[i] = truncate(fromInteger(i)+fromInteger(valueOf(B))*(fromInteger(valueOf(N)/valueOf(B))-m_sample_in) + fromInteger(valueOf(N))*m_line_in + 1);
+			x[i] = unpack(truncate(fromInteger(i)+fromInteger(valueOf(B))*(fromInteger(valueOf(N)/valueOf(B))-m_sample_in) + fromInteger(valueOf(N))*m_line_in + 1));
 			$write("%d ",x[i]);
         end
         $display("");
         
-        dwt2d.request.put(toWSample(x));
+        dwt2d.request.put(x);
         
         if(m_sample_in == 1)begin    
 	        m_line_in <= m_line_in + 1;
@@ -74,7 +74,7 @@ module mkDWT2DTest (Empty);
     	
     	$write("Output %d: ", m_line_out);
         for(Integer i=0;i<valueOf(B);i=i+1)begin
-			fxptWrite(4,x[i]);$write(" ");
+		$write("%d ", x[i]);
         end
         $display("");
     

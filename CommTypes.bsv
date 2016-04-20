@@ -17,7 +17,8 @@ typedef Bit#(1024) Line;
 
 typedef Bit#(512) MemData;
 
-typedef FixedPoint#(16,16) Coeff;
+//typedef FixedPoint#(16,16) Coeff;
+typedef Int#(12) Coeff;
 
 //typedef Bit#(24) Addr;
 //add line type
