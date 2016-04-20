@@ -13,8 +13,7 @@ import CommTypes::*;
 (* synthesize *)
 module mkHuffmanTest (Empty);
 
-   Encode e <- mkEncoder;
-   BitToByte b2bb <- mkSerializerbTB;
+   Encode#(8) e <- mkEncoder();
    ByteToBit bb2b <- mkDeserializerBTb;
    Decode d <- mkDecoder;
    
@@ -26,7 +25,7 @@ module mkHuffmanTest (Empty);
    Reg#(Bit#(32)) feedDF <- mkReg(0);
    Reg#(Bit#(32)) checkDF <- mkReg(0);
 	
-   function Action dofeedEF(Coeff x);
+   function Action dofeedEF(Vector#(8,Coeff) x);
       action
          e.request.put(x);
          feedEF <= feedEF+1;
@@ -50,7 +49,7 @@ module mkHuffmanTest (Empty);
 
    rule e_to_b2bb;
       let x <- e.response.get();
-      b2bb.request.put(x);
+      bb2b.request.put(x);
       //$display("bits to bytes:",fshow(x));
    endrule
 
@@ -59,25 +58,36 @@ module mkHuffmanTest (Empty);
       d.request.put(x);
       //$display("bits to decoder:", fshow(x));
    endrule
-
+/*
    rule b2bb_to_bb2b;
       let x <- b2bb.response.get();
       bb2b.request.put(x);
       //$display("bytes to bytes:",fshow(x));
    endrule
+ */
+   Vector#(8,Coeff) ti1 = newVector;
+   ti1[0] = 55;
+   ti1[1] = 1;
+   ti1[2] = -1;
+   ti1[3] = 2;
+   ti1[4] = -2;
+   ti1[5] = 3;
+   ti1[6] = -3;
+   ti1[7] = -4;
 
-   rule f0 (feedEF == 0); dofeedEF(55); endrule
-   rule f1 (feedEF == 1); dofeedEF(1); endrule
-   rule f2 (feedEF == 2); dofeedEF(-1); endrule
-   rule f3 (feedEF == 3); dofeedEF(2); endrule
-   rule f4 (feedEF == 4); dofeedEF(-2); endrule
-   rule f5 (feedEF == 5); dofeedEF(3); endrule
-   rule f6 (feedEF == 6); dofeedEF(-3); endrule
-   rule f7 (feedEF == 7); dofeedEF(-4); endrule
-   rule f8 (feedEF == 0); dofeedEF(0); endrule
-   rule ft (checkEF !=8);  dofeedEF(0); endrule
+   Vector#(8,Coeff) ti2 = newVector;
+   ti2[0] = 0;
+   ti2[1] = 0;
+   ti2[2] = 0;
+   ti2[3] = 0;
+   ti2[4] = 0;
+   ti2[5] = 0;
+   ti2[6] = 0;
+   ti2[7] = 0;
+   rule f0 (feedEF == 0); dofeedEF(ti1); endrule
+   rule f1 (feedEF == 1); dofeedEF(ti2); endrule
  
-  rule c0 ((checkEF == 0)&&(feedEF == 8)); docheckEF(55); endrule
+  rule c0 ((checkEF == 0)&&(feedEF == 2)); docheckEF(55); endrule
    rule c1 ((checkEF == 1)); docheckEF(1); endrule
    rule c2 ((checkEF == 2)); docheckEF(-1); endrule
    rule c3 ((checkEF == 3)); docheckEF(2); endrule
