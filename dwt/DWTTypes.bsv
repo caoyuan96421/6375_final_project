@@ -6,7 +6,7 @@ import ClientServer::*;
 import GetPut::*;
 
 // Image Sample
-typedef Bit#(12) Sample;
+typedef Int#(8) Sample;
 
 // Wavelet Transformed sample
 typedef 14 WI;
@@ -14,11 +14,8 @@ typedef 18 WF;
 typedef FixedPoint#(WI,WF) WSample;
 typedef FixedPoint#(2,WF) DWTCoef;
 
-// Sizes
-typedef 2048 MAX_SAMPLE;
-typedef 2048 MAX_LINE;
-typedef 8 BLOCK_SIZE;
-
+// Quantized Sample
+typedef Int#(WI) QSample;
 
 typedef Bit#(TLog#(n)) Size_t#(numeric type n);
 
@@ -31,24 +28,31 @@ typedef DWT#(p) DWT1D#(numeric type n, numeric type p);
 typedef DWT#(p) DWT2D#(numeric type n, numeric type m, numeric type p);
 typedef DWT#(p) DWT2DML#(numeric type n, numeric type m, numeric type p, numeric type l);
 
-/*interface DWT1D#(numeric type n);
-	interface DWT#(n) data;
-	method Action start(Size_sample l);
-endinterface
+// Integer DWT interfaces
+typedef Server#(
+	Vector#(p, Sample),
+	Vector#(p, QSample)
+) DWT2DMLI#(numeric type n, numeric type m, numeric type p, numeric type l);
 
-interface DWT2D#(numeric type n);
-	interface DWT#(n) data;
-	method Action start(Size_sample l, Size_line m);
-endinterface
-*/
+typedef Server#(
+	Vector#(p, QSample),
+	Vector#(p, Sample)
+) IDWT2DMLI#(numeric type n, numeric type m, numeric type p, numeric type l);
 
-// Convert Sample in to WSample
-function Vector#(n,WSample) toWSample(Vector#(n,Sample) in);
-	Vector#(n, WSample) out = replicate(0);
-	for(Integer i=0; i<valueOf(n); i=i+1) begin
-		out[i] = fromInt(unpack(in[i]));
+function Vector#(p,WSample) toWSample(Vector#(p,Int#(q)) v) provisos( Add#(q, a__, WI) );
+	Vector#(p, WSample) x = replicate(0);
+	for(Integer i=0; i<valueOf(p); i=i+1) begin
+		x[i] = fromInt(v[i]);
 	end
-	return out;
+	return x;
+endfunction
+
+// Truncate WSample if necessary
+function Vector#(p, Int#(q)) fromWSample(Vector#(p, WSample) x) provisos( Add#(q, a__, WI) );
+	Vector#(p, Int#(q)) v = newVector;
+	for(Integer i=0; i<valueOf(p); i=i+1)
+		v[i] = unpack(truncate(pack(fxptGetInt(x[i]))));
+	return v;
 endfunction
 
 Real cdf97_LiftFilter_a = -1.5861343420693648;
