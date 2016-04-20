@@ -16,6 +16,7 @@ import DWT2DML::*;
 
 import Encoder::*;
 import Decoder::*;
+import HuffmanLoopBack::8;
 
 typedef 1024 N;
 typedef 1024 M;

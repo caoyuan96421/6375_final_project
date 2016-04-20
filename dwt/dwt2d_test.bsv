@@ -6,18 +6,20 @@ import FShow::*;
 import DWT2D::*;
 import DWT2DML::*;
 import DWTTypes::*;
+import huffmanLoopBack::*;
 
-typedef 32 N;
-typedef 32 M;
+typedef 16 N;
+typedef 16 M;
 typedef 4 B;
 typedef 1 T;
-typedef 3 L;
+typedef 1 L;
 
       
 // Unit test for DWT module
 (* synthesize *)
 module mkDWT2DTest (Empty);
 	DWT2DMLI#(N,M,B,L) dwt2d <- mkDWT2DMLI();
+	HuffmanLoopBack#(B) huffman <- mkHuffmanLoopBack();
 	IDWT2DMLI#(N,M,B,L) idwt2d <- mkIDWT2DMLI();
 	
 	Reg#(Bool) m_inited <- mkReg(False);
@@ -37,9 +39,18 @@ module mkDWT2DTest (Empty);
     endrule
 
 	(* fire_when_enabled *)
-	rule dwt2idwt;
+	rule dwt2huffman;
 		let x <- dwt2d.response.get();
+		huffman.request.put(x);
+        $display("%t to   Huffman:",$time, fshow(x));
+		//idwt2d.request.put(x);
+	endrule
+	
+	(* fire_when_enabled *)
+	rule huffman2idwdt;
+		let x <- huffman.response.get();
 		idwt2d.request.put(x);
+        $display("%t from Huffman:",$time, fshow(x));
 	endrule
 
     rule send(m_inited && m_line_in < fromInteger(valueOf(M)) && t<fromInteger(valueOf(T)));

@@ -6,13 +6,13 @@ default: full_clean compile link simulate
 .PHONY: compile
 compile:
 	@echo Compiling...
-	bsc -u -sim -simdir . -bdir bscdir -info-dir . -keep-fires -steps-warn-interval 100000 -steps-max-intervals 100 -show-schedule -aggressive-conditions -D SIM -p .:%/Prelude:%/Libraries:%/Libraries/BlueNoC -g mkDWT2DTest  dwt2d_test.bsv 
+	bsc -u -sim -simdir . -bdir bscdir -info-dir . -keep-fires -steps-warn-interval 100000 -steps-max-intervals 100 -show-schedule -aggressive-conditions -D SIM -p .:../serialize:../deserialize:../huffman:..:../includes:%/Prelude:%/Libraries:%/Libraries/BlueNoC -g mkDWT2DTest  dwt2d_test.bsv 
 	@echo Compilation finished
 
 .PHONY: link
 link:
 	@echo Linking...
-	bsc -e mkDWT2DTest -sim -o ./out -simdir . -p .:%/Prelude:%/Libraries:%/Libraries/BlueNoC -bdir bscdir -keep-fires 
+	bsc -e mkDWT2DTest -sim -o ./out -simdir . -p .:../serialize:../deserialize:../huffman:..:../includes:%/Prelude:%/Libraries:%/Libraries/BlueNoC -bdir bscdir -keep-fires 
 	@echo Linking finished
 
 .PHONY: simulate

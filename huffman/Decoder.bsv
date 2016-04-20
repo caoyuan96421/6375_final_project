@@ -1,6 +1,6 @@
 import ClientServer::*;
 import GetPut::*;
-import Fifo::*;
+import FIFO::*;
 import Vector::*;
 import FixedPoint::*;
 
@@ -13,8 +13,8 @@ typedef Server#(
 
 (* synthesize *)
 module mkDecoder(Decode ifc);
-   Fifo#(2,Bit#(1)) inputFIFO <- mkCFFifo;
-   Fifo#(2,Coeff) outputFIFO <- mkCFFifo; //do need another chunker?
+   FIFO#(Bit#(1)) inputFIFO <- mkFIFO;
+   FIFO#(Coeff) outputFIFO <- mkFIFO; //do need another chunker?
    //integer of full precision
    Vector#(16,Reg#(Bit#(1))) storedBits <- replicateM(mkReg(0));
    Reg#(Bit#(5)) numberBits <- mkReg(0);
@@ -27,8 +27,8 @@ module mkDecoder(Decode ifc);
       inputFIFO.deq;
       Bit#(5) tempNumberBits = 0;
       Coeff x = 0;
-      //$display("new bit:", newBit);
-      //$display("number bits:", numberBits);
+      $display("new bit:", newBit);
+      $display("number bits:", numberBits);
       case (numberBits)
 	 5'd0: 
 	 begin
@@ -118,9 +118,8 @@ module mkDecoder(Decode ifc);
 	       out[i] = storedBits[i];
 	    end 
 	    out[15] = newBit;
-	    //$display("bits:%b",out);
-	    Int#(16) iout = unpack(out);
-	    x = fromInt(iout);
+	    x = unpack(truncate(out));
+	    $display("decode:%d",x);
 	     //will prob have type problems
 	    //$display("bits:%b,int:%d,fp:",out,iout,fshow(x));
 	    tempNumberBits = 0;
