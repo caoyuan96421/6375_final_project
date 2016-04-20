@@ -34,7 +34,6 @@ function Bool can_write (Vector#(63,Reg#(Maybe#(Bit#(1)))) bitBuffer,Reg#(Bit#(6
    end
 endfunction
 
-//(* synthesize *)
 module mkEncoder(Encode#(p) ifc);
    Fifo#(2,Vector#(p,Coeff)) inputFIFO <- mkCFFifo;
    Fifo#(11,Byte) outputFIFO <- mkCFFifo; //scaled so that 2*p coeffs = 11*p bytes
