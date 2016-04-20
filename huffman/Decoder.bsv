@@ -90,95 +90,106 @@ module mkDecoder(Decode#(p) ifc);
       //end
    endrule
 
-   rule getCoeff (can_read(bitBuffer,r_index));
+   rule getCoeff (isValid(bitBuffer[r_index]));//(can_read(bitBuffer,r_index));
       let newBit_0 = fromMaybe(?,bitBuffer[r_index]);
-      let newBit_1 = fromMaybe(?,bitBuffer[r_index+1]);
-      let newBit_2 = fromMaybe(?,bitBuffer[r_index+2]);
-      let newBit_3 = fromMaybe(?,bitBuffer[r_index+3]);
-      let newBit_4 = fromMaybe(?,bitBuffer[r_index+4]);
-      let newBit_5 = fromMaybe(?,bitBuffer[r_index+5]);
+      //let newBit_1 = fromMaybe(?,bitBuffer[r_index+1]);
+      //let newBit_2 = fromMaybe(?,bitBuffer[r_index+2]);
+      //let newBit_3 = fromMaybe(?,bitBuffer[r_index+3]);
+      //let newBit_4 = fromMaybe(?,bitBuffer[r_index+4]);
+      //let newBit_5 = fromMaybe(?,bitBuffer[r_index+5]);
       Coeff in = 0;
       Bit#(6) new_index = 0;
+      Bool ready = False;
       //for (Integer j = 0; j < 63; j=j+1) begin
 	//$display("r bit buffer:",fshow(bitBuffer[j]));
       //end
-      if (newBit_1 == 0) begin
-	 //$display("0");
-	 in = 0;
-	 //toVectFIFO.enq(in);
-	 for (Integer i = 0; i < 2; i=i+1) begin
-	    bitBuffer[r_index + fromInteger(i)] <= tagged Invalid;
-	 end
-	 new_index = 2;
-      end
-      else begin
-	 if (newBit_2 == 0) begin
-	    if (newBit_3 == 0) begin
-	       //$display("1");
-	       in = 1;
-	    end
-	    else begin
-	       //$display("-1");
-	       in = -1;
-	    end
-	    new_index = 4;
-	    for (Integer i = 0; i < 4; i=i+1) begin
+      if (isValid(bitBuffer[r_index + 1])) begin
+	 let newBit_1 = fromMaybe(?,bitBuffer[r_index+1]);
+	 if (newBit_1 == 0) begin
+	    in = 0;
+	    for (Integer i = 0; i < 2; i=i+1) begin
 	       bitBuffer[r_index + fromInteger(i)] <= tagged Invalid;
 	    end
+	    new_index = 2;
+	    ready = True;
 	 end
 	 else begin
-	    if (newBit_3 == 0) begin
-	       if (newBit_4 == 0) begin
-		  //$display("2");
-		  in = 2;
-	       end
-	       else begin
-		  //$display("-2");
-		  in = -2;
-	       end
-	       new_index = 5;
-	       for (Integer i = 0; i < 5; i=i+1) begin
-		  bitBuffer[r_index + fromInteger(i)] <= tagged Invalid;
-	       end
-	    end
-	    else begin
-	       for (Integer i = 0; i < 6; i=i+1) begin
-		  bitBuffer[r_index + fromInteger(i)] <= tagged Invalid;
-	       end
-	       new_index = 6;
-	       if (newBit_4 == 0) begin
-		  if (newBit_5 == 0) begin
-		     //$display("3");
-		     in = 3;
-		  end
-		  else begin
-		     //$display("-3");
-		     in = -3;
+	    if (isValid(bitBuffer[r_index + 2])&&isValid(bitBuffer[r_index + 3])) begin
+	       let newBit_2 = fromMaybe(?,bitBuffer[r_index+2]);
+	       let newBit_3 = fromMaybe(?,bitBuffer[r_index+3]);
+	       if (newBit_2 == 0) begin
+		  if (newBit_3 == 0) begin in = 1; end
+		  else begin in = -1; end
+		  new_index = 4;
+		  ready = True;
+		  for (Integer i = 0; i < 4; i=i+1) begin
+		     bitBuffer[r_index + fromInteger(i)] <= tagged Invalid;
 		  end
 	       end
 	       else begin
-		  if (newBit_5 == 0) begin
-		     //$display("-4");
-		     in = -4;
-		  end
-		  else begin
-		     //$display("new!");
-		     Bit#(16) tempCoeff = 0;
-		     new_index = 22;
-		     for (Integer i = 0; i < 16; i=i+1) begin
-			tempCoeff[i] = fromMaybe(?,bitBuffer[r_index + 6 + fromInteger(i)]);
-			bitBuffer[r_index + 6 + fromInteger(i)] <= tagged Invalid;
+		  if (isValid(bitBuffer[r_index + 4])) begin
+		     let newBit_4 = fromMaybe(?,bitBuffer[r_index+4]);
+		     if (newBit_3 == 0) begin
+			if (newBit_4 == 0) begin in = 2; end
+			else begin in = -2; end
+			new_index = 5;
+			ready = True;
+			for (Integer i = 0; i < 5; i=i+1) begin
+			   bitBuffer[r_index + fromInteger(i)] <= tagged Invalid;
+			end
 		     end
-		     Int#(16) tC = unpack(tempCoeff);
-		     in = fromInt(tC);
+		     else begin
+			if (isValid(bitBuffer[r_index + 5])) begin
+			   let newBit_5 = fromMaybe(?,bitBuffer[r_index+5]);
+			   if (newBit_4 == 0) begin
+			      if (newBit_5 == 0) begin in = 3; end
+			      else begin in = -3; end
+			      for (Integer i = 0; i < 6; i=i+1) begin
+				 bitBuffer[r_index + fromInteger(i)] <= tagged Invalid;
+			      end
+			      new_index = 6;
+			      ready = True;
+			   end
+			   else begin
+			      if (newBit_5 == 0) begin
+				 in = -4;
+				 for (Integer i = 0; i < 6; i=i+1) begin
+				    bitBuffer[r_index + fromInteger(i)] <= tagged Invalid;
+				 end
+				 new_index = 6;
+				 ready = True;
+			      end
+			      else begin
+				 //$display("new!");
+				 if (isValid(bitBuffer[r_index + 21])) begin
+				    Bit#(16) tempCoeff = 0;
+				    new_index = 22;
+				    for (Integer i = 0; i < 6; i=i+1) begin
+				       bitBuffer[r_index + fromInteger(i)] <= tagged Invalid;
+				    end
+				    for (Integer i = 0; i < 16; i=i+1) begin
+				       tempCoeff[i] = fromMaybe(?,bitBuffer[r_index + 6 + fromInteger(i)]);
+				       bitBuffer[r_index + 6 + fromInteger(i)] <= tagged Invalid;
+				    end
+				    Int#(16) tC = unpack(tempCoeff);
+				    in = fromInt(tC);
+				    ready = True;
+				 end
+			      end
+			   end
+			end
+		     end
 		  end
 	       end
 	    end
 	 end
       end
       //$display("to vect fifo:%h",in);
-      toVectFIFO.enq(in);
-      r_index <= r_index + new_index;
+      if (ready) begin
+	 //$display("coeff out:%h",in);
+	 toVectFIFO.enq(in);
+	 r_index <= r_index + new_index;
+      end
    endrule
 
    rule toVect;
