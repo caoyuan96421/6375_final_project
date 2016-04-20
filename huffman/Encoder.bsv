@@ -1,6 +1,7 @@
 import ClientServer::*;
 import GetPut::*;
 import Fifo::*;
+import FIFO::*;
 import Vector::*;
 import FixedPoint::*;
 
@@ -34,16 +35,34 @@ function Bool can_write (Vector#(63,Reg#(Maybe#(Bit#(1)))) bitBuffer,Reg#(Bit#(6
    end
 endfunction
 
+function Bool can_read (Vector#(63,Reg#(Maybe#(Bit#(1)))) bitBuffer,Reg#(Bit#(6)) r_index);
+   if (isValid(bitBuffer[r_index])) begin
+      if (r_index + 3 < 63) begin
+	 if (isValid(bitBuffer[r_index + 3])) return True;
+	 else return False;
+      end
+      else begin
+	 //return True;
+	 if (isValid(bitBuffer[r_index + 3-63])) return True;
+	 else return False;
+      end
+   end
+   else begin
+      return False;
+   end
+endfunction
+
+//(* synthesize *)
 module mkEncoder(Encode#(p) ifc);
-   Fifo#(2,Vector#(p,Coeff)) inputFIFO <- mkCFFifo;
-   Fifo#(11,Byte) outputFIFO <- mkCFFifo; //scaled so that 2*p coeffs = 11*p bytes
+   FIFO#(Vector#(p,Coeff)) inputFIFO <- mkFIFO;
+   FIFO#(Byte) outputFIFO <- mkFIFO; //scaled so that 2*p coeffs = 11*p bytes
    Reg#(Bit#(6)) coeff_count <- mkReg(0);
    Reg#(Bit#(6)) count <- mkReg(0);
    Reg#(Bit#(6)) maxCountReg <- mkReg(0);
    Reg#(Bit#(6)) valueReg <- mkReg(0);
    Reg#(Bit#(16)) coeffReg <- mkReg(0);
    Reg#(Vector#(p,Encoding)) currEncoding <- mkRegU;
-   Fifo#(2,Vector#(p,Encoding)) encodingFIFO <- mkCFFifo; //this fifo should also change size
+   FIFO#(Vector#(p,Encoding)) encodingFIFO <- mkFIFO; //this fifo should also change size
    Vector#(63,Reg#(Maybe#(Bit#(1)))) bitBuffer <- replicateM(mkReg(Invalid));
    Reg#(Bit#(6)) w_index <- mkReg(0);
    Reg#(Bit#(6)) r_index <- mkReg(0);
@@ -69,7 +88,7 @@ module mkEncoder(Encode#(p) ifc);
 	    default:encoding[i] = Encoding{size:22,value:6'b111111, coeff:inCoeffB};
 	 endcase
       end
-      $display("encoding vector:",encoding);
+      //$display("encoding vector:",encoding);
       inputFIFO.deq;
       encodingFIFO.enq(encoding);
       
@@ -135,21 +154,22 @@ module mkEncoder(Encode#(p) ifc);
    rule bitChunk_v3 (can_write(bitBuffer,w_index)); //aggressive blocking for now
       Bit#(6) value = 0;
       Bit#(16) coeff = 0;
-      Encoding curr = Encoding{size:?,value:?,coeff:?};
+      Encoding curr = Encoding{size:0,value:0,coeff:0};
       $display("coeff count:",coeff_count);
-      $display("w index:", w_index);
-      $display("valid?:", isValid(bitBuffer[w_index+curr.size-1]));
+      //$display("w index:", w_index);
+      //$display("valid?:", isValid(bitBuffer[w_index+curr.size-1]));
       if (coeff_count == 0) begin
 	 currEncoding <= encodingFIFO.first;
-	 if (!isValid(bitBuffer[w_index+curr.size-1])) encodingFIFO.deq;
 	 curr = encodingFIFO.first[0];
+	 if (!isValid(bitBuffer[w_index+curr.size-1])) encodingFIFO.deq;
       end
       else begin
 	 curr = currEncoding[coeff_count];
       end
-      for (Integer j = 0; j < 63; j=j+1) begin
-	 $display("w bit buffer:",fshow(bitBuffer[j]));
-      end
+      //for (Integer j = 0; j < 63; j=j+1) begin
+	// $display("w bit buffer:",fshow(bitBuffer[j]));
+      //end
+      $display("w_index:",w_index);
       $display("curr size:%d,curr value %b",curr.size, curr.value);
       for (Integer i = 0; i < 22; i=i+1) begin
 	 if (fromInteger(i) < curr.size) begin
@@ -175,8 +195,8 @@ module mkEncoder(Encode#(p) ifc);
       else begin
 	 w_index <= w_index + curr.size;
       end
-      
-      if (coeff_count == fromInteger(valueOf(p))) begin
+      //$display("coeff_count",coeff_count);
+      if (coeff_count == fromInteger(valueOf(TSub#(p,1)))) begin
 	 coeff_count <= 0;
       end
       else begin
@@ -185,12 +205,11 @@ module mkEncoder(Encode#(p) ifc);
 
    endrule
 
-   rule buffer_read (isValid(bitBuffer[r_index]) && isValid(bitBuffer[r_index+3])); 
+   rule buffer_read (can_read(bitBuffer,r_index));//(isValid(bitBuffer[r_index]) && isValid(bitBuffer[r_index+3])); 
       Byte out = 0;
-      $display("reading, r index:",r_index);
-      for (Integer j = 0; j < 63; j=j+1) begin
-	 $display("r bit buffer:",fshow(bitBuffer[j]));
-      end
+      //for (Integer j = 0; j < 63; j=j+1) begin
+	 //$display("r bit buffer:",fshow(bitBuffer[j]));
+      //end
       for (Integer i = 0; i < 4; i=i+1) begin
 	 out[i] = fromMaybe(?,bitBuffer[r_index + fromInteger(i)]);
 	 bitBuffer[r_index+fromInteger(i)] <= tagged Invalid;
@@ -201,6 +220,7 @@ module mkEncoder(Encode#(p) ifc);
       else begin
 	 r_index <= r_index + 4;
       end
+      //$display("out",out);
       outputFIFO.enq(out);
    endrule
   
