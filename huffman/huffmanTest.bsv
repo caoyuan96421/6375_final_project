@@ -15,8 +15,7 @@ import huffmanLoopBack::*;
 module mkHuffmanTest (Empty);
 
    //Encode#(8) e <- mkEncoder();
-   //ByteToBit bb2b <- mkDeserializerBTb;
-   //Decode d <- mkDecoder;
+   //Decode#(8) d <- mkDecoder;
    HuffmanLoopBack#(8) lb <- mkHuffmanLoopBack();
    
    Reg#(Bool) passedEF <- mkReg(True);
@@ -38,6 +37,7 @@ module mkHuffmanTest (Empty);
    function Action docheckEF(Vector#(8,Coeff) wnt);
       action
 	 let x <- lb.response.get;
+	 //let x <- d.response.get;
 	 if (x != wnt) begin
             $display("wnt: %x", wnt);
             $display("got: %x", x);
@@ -50,34 +50,13 @@ module mkHuffmanTest (Empty);
       endaction
    endfunction
 	 
-/*   
-   function Action docheckEF(Coeff wnt);
-      action
-         let x <- d.response.get;
-         if (x != wnt) begin
-            $display("wnt: %x", wnt);
-            $display("got: %x", x);
-            passedEF <= False;
-         end
-	 else begin
-	    $display("passed");
-	 end
-         checkEF <= checkEF+1;
-      endaction
-   endfunction
-
-   rule e_to_b2bb;
+/*
+   rule e_to_d;
       let x <- e.response.get();
-      bb2b.request.put(x);
+      d.request.put(x);
       $display("encode to bytes:",fshow(x));
    endrule
-
-   rule bb2b_to_d;
-      let x <- bb2b.response.get();
-      d.request.put(x);
-      //$display("bits to decoder:", fshow(x));
-   endrule
-*/
+  */
    Vector#(8,Coeff) ti1 = newVector;
    ti1[0] = 55;
    ti1[1] = 1;
@@ -108,10 +87,38 @@ module mkHuffmanTest (Empty);
    ti2[6] = 0;
    ti2[7] = 0;
 
+   Vector#(8,Coeff) to2 = newVector;
+   ti2[0] = 0;
+   ti2[1] = 0;
+   ti2[2] = 0;
+   ti2[3] = 0;
+   ti2[4] = 0;
+   ti2[5] = 0;
+   ti2[6] = 0;
+   ti2[7] = 0;
+
+   Vector#(8,Coeff) ti3 = newVector;
+   ti3[0] = 0;
+   ti3[1] = 0;
+   ti3[2] = 0;
+   ti3[3] = 0;
+   ti3[4] = 0;
+   ti3[5] = 0;
+   ti3[6] = 0;
+   ti3[7] = 0;
+
    
    rule f0 (feedEF == 0); dofeedEF(ti1); endrule
-   rule f1 (feedEF == 1); dofeedEF(ti2); endrule
-   rule c0 ((checkEF == 0)&&(feedEF == 2)); docheckEF(to1); endrule
+   rule f1 (feedEF == 1); dofeedEF(ti1); endrule
+   rule f2 (feedEF == 2); dofeedEF(ti2); endrule
+   rule f3 (feedEF == 3); dofeedEF(ti2); endrule
+   rule f4 (feedEF == 4); dofeedEF(ti2); endrule
+   rule f5 (feedEF == 5); dofeedEF(ti2); endrule
+   rule c0 ((checkEF == 0)&&(feedEF == 6)); docheckEF(to1); endrule
+   rule c1 (checkEF == 1); docheckEF(to1); endrule
+   rule c2 (checkEF == 2); docheckEF(to2); endrule
+   //rule c3 (checkEF == 3); docheckEF(to2); endrule
+   
  /*
   rule c0 ((checkEF == 0)&&(feedEF == 2)); docheckEF(55); endrule
    rule c1 ((checkEF == 1)); docheckEF(1); endrule
@@ -123,7 +130,7 @@ module mkHuffmanTest (Empty);
    rule c7 ((checkEF == 7)); docheckEF(-4); endrule
    rule c8 ((checkEF == 8)); docheckEF(0); endrule
   */
-   rule finishEF (checkEF == 1);
+   rule finishEF (checkEF == 3);
       if (passedEF) begin
          $display("PASSED");
       end 

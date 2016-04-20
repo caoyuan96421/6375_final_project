@@ -18,10 +18,9 @@ module mkHuffmanLoopBack (HuffmanLoopBack#(p) ifc);
    FIFO#(Vector#(p,Coeff)) inFIFO <- mkFIFO;
    FIFO#(Vector#(p,Coeff)) outFIFO <- mkFIFO;
    Encode#(p) e <- mkEncoder();
-   ByteToBit bb2b <- mkDeserializerBTb;
-   Decode d <- mkDecoder;
-   Reg#(Bit#(TLog#(p))) count <- mkReg(0);
-   Vector#(p,Reg#(Coeff)) storeVect <- replicateM(mkReg(0));
+   Decode#(p) d <- mkDecoder();
+   //Reg#(Bit#(TLog#(p))) count <- mkReg(0);
+   //Vector#(p,Reg#(Coeff)) storeVect <- replicateM(mkReg(0));
 
    rule in_to_e;
       let x = inFIFO.first;
@@ -29,6 +28,17 @@ module mkHuffmanLoopBack (HuffmanLoopBack#(p) ifc);
       e.request.put(x);
    endrule
 
+   rule e_to_d;
+      let x <- e.response.get();
+      d.request.put(x);
+      $display("encode to bytes:",fshow(x));
+   endrule
+
+   rule d_to_out;
+      let x <- d.response.get();
+      outFIFO.enq(x);
+   endrule
+/*
    rule e_to_b2bb;
       let x <- e.response.get();
       bb2b.request.put(x);
@@ -58,7 +68,7 @@ module mkHuffmanLoopBack (HuffmanLoopBack#(p) ifc);
 	 count <= count + 1;
       end
    endrule
-
+*/
    interface Put request;
       method Action put (Vector#(p,Coeff) x );
 	 inFIFO.enq(x);

@@ -8,61 +8,61 @@ import FixedPoint::*;
 import CommTypes::*;
 
 typedef Server#(
-		//Byte,
-		Bit#(1),
-		//Vector#(p,Coeff)
-		Coeff
-		)Decode; //#(numeric type p);
+		Byte,
+		//Bit#(1),
+		Vector#(p,Coeff)
+		//Coeff
+		)Decode#(numeric type p);
 
 
-function Bool can_write (Vector#(63,Reg#(Maybe#(Bit#(1)))) bitBuffer,Reg#(Bit#(6)) w_index);
-   if (isValid(bitBuffer[w_index])) begin
-      return False;
-   end
-   else begin
-      if (w_index + 4 < 63) begin
-	 if (isValid(bitBuffer[w_index + 4])) return False;
-	 else return True;
+function Bool can_write (Vector#(64,Reg#(Maybe#(Bit#(1)))) bitBuffer,Reg#(Bit#(6)) w_index);
+   if (!isValid(bitBuffer[w_index])) begin
+      if (w_index + 3 < 63) begin
+	 if (!isValid(bitBuffer[w_index + 3])) return True;
+	 else return False;
       end
       else begin
-	 
-	 if (isValid(bitBuffer[w_index + 4-63])) return False;
-	 else return True;
+	 //return True;
+	 if (!isValid(bitBuffer[w_index + 3-63])) return True;
+	 else return False;
       end
+   end
+   else begin
+      return False;
    end
 endfunction
 
-function Bool can_read (Vector#(63,Reg#(Maybe#(Bit#(1)))) bitBuffer,Reg#(Bit#(6)) r_index);
-   if (isValid(bitBuffer[r_index])) begin
+function Bool can_read (Vector#(64,Reg#(Maybe#(Bit#(1)))) bitBuffer,Reg#(Bit#(6)) r_index);
+   if (!isValid(bitBuffer[r_index])) begin
       return False;
    end
    else begin
       if (r_index + 22 < 63) begin
-	 if (isValid(bitBuffer[r_index + 22])) return False;
+	 if (!isValid(bitBuffer[r_index + 22])) return False;
 	 else return True;
       end
       else begin
 	 
-	 if (isValid(bitBuffer[r_index + 22-63])) return False;
+	 if (!isValid(bitBuffer[r_index + 22-63])) return False;
 	 else return True;
       end
    end
 endfunction
 
 //(* synthesize *)
-module mkDecoder(Decode ifc);
-   //Fifo#(11,Byte) inputFIFO <- mkCFFifo;
-   //Fifo#(2,Vector#(p,Coeff)) outputFIFO <- mkCFFifo;
-   FIFO#(Bit#(1)) inputFIFO <- mkFIFO;
-   FIFO#(Coeff) outputFIFO <- mkFIFO;
+module mkDecoder(Decode#(p) ifc);
+   FIFO#(Byte) inputFIFO <- mkFIFO;
+   FIFO#(Vector#(p,Coeff)) outputFIFO <- mkFIFO;
+   //FIFO#(Bit#(1)) inputFIFO <- mkFIFO;
+   //FIFO#(Coeff) outputFIFO <- mkFIFO;
    //integer of full precision
-   Vector#(16,Reg#(Bit#(1))) storedBits <- replicateM(mkReg(0));
-   Reg#(Bit#(5)) numberBits <- mkReg(0);
-   Reg#(Bool) oneNext <- mkReg(False);
-   Reg#(Bool) twoNext <- mkReg(False);
-   Reg#(Bool) threeNext <- mkReg(False);
-/*
-   Vector#(63,Reg#(Maybe#(Bit#(1)))) bitBuffer <- replicateM(mkReg(Invalid));
+   //Vector#(16,Reg#(Bit#(1))) storedBits <- replicateM(mkReg(0));
+   //Reg#(Bit#(5)) numberBits <- mkReg(0);
+   //Reg#(Bool) oneNext <- mkReg(False);
+   //Reg#(Bool) twoNext <- mkReg(False);
+   //Reg#(Bool) threeNext <- mkReg(False);
+
+   Vector#(64,Reg#(Maybe#(Bit#(1)))) bitBuffer <- replicateM(mkReg(Invalid));
    Reg#(Bit#(6)) w_index <- mkReg(0);
    Reg#(Bit#(6)) r_index <- mkReg(0);
    FIFO#(Coeff) toVectFIFO <- mkFIFO;
@@ -72,8 +72,10 @@ module mkDecoder(Decode ifc);
    //conflicts with buffer_read, we make writes higher priority
    (* descending_urgency = "loadbyte, getCoeff" *)
    rule loadbyte (can_write(bitBuffer,w_index));
+      //$display("guard?:",(can_write(bitBuffer,w_index)));
       let load = inputFIFO.first;
       inputFIFO.deq;
+      //$display("load:",fshow(load));
       for (Integer i = 0; i < 4; i=i+1) begin
 	 bitBuffer[w_index+fromInteger(i)] <= tagged Valid load[i];
       end
@@ -83,6 +85,9 @@ module mkDecoder(Decode ifc);
       else begin
 	 w_index <= w_index + 4;
       end
+      //for (Integer j = 0; j < 63; j=j+1) begin
+	//$display("w bit buffer:",fshow(bitBuffer[j]));
+      //end
    endrule
 
    rule getCoeff (can_read(bitBuffer,r_index));
@@ -93,21 +98,30 @@ module mkDecoder(Decode ifc);
       let newBit_4 = fromMaybe(?,bitBuffer[r_index+4]);
       let newBit_5 = fromMaybe(?,bitBuffer[r_index+5]);
       Coeff in = 0;
+      Bit#(6) new_index = 0;
+      //for (Integer j = 0; j < 63; j=j+1) begin
+	//$display("r bit buffer:",fshow(bitBuffer[j]));
+      //end
       if (newBit_1 == 0) begin
+	 //$display("0");
 	 in = 0;
 	 //toVectFIFO.enq(in);
 	 for (Integer i = 0; i < 2; i=i+1) begin
 	    bitBuffer[r_index + fromInteger(i)] <= tagged Invalid;
 	 end
+	 new_index = 2;
       end
       else begin
 	 if (newBit_2 == 0) begin
 	    if (newBit_3 == 0) begin
+	       //$display("1");
 	       in = 1;
 	    end
 	    else begin
+	       //$display("-1");
 	       in = -1;
 	    end
+	    new_index = 4;
 	    for (Integer i = 0; i < 4; i=i+1) begin
 	       bitBuffer[r_index + fromInteger(i)] <= tagged Invalid;
 	    end
@@ -115,11 +129,14 @@ module mkDecoder(Decode ifc);
 	 else begin
 	    if (newBit_3 == 0) begin
 	       if (newBit_4 == 0) begin
+		  //$display("2");
 		  in = 2;
 	       end
 	       else begin
+		  //$display("-2");
 		  in = -2;
 	       end
+	       new_index = 5;
 	       for (Integer i = 0; i < 5; i=i+1) begin
 		  bitBuffer[r_index + fromInteger(i)] <= tagged Invalid;
 	       end
@@ -128,20 +145,26 @@ module mkDecoder(Decode ifc);
 	       for (Integer i = 0; i < 6; i=i+1) begin
 		  bitBuffer[r_index + fromInteger(i)] <= tagged Invalid;
 	       end
+	       new_index = 6;
 	       if (newBit_4 == 0) begin
 		  if (newBit_5 == 0) begin
+		     //$display("3");
 		     in = 3;
 		  end
 		  else begin
+		     //$display("-3");
 		     in = -3;
 		  end
 	       end
 	       else begin
 		  if (newBit_5 == 0) begin
+		     //$display("-4");
 		     in = -4;
 		  end
 		  else begin
+		     //$display("new!");
 		     Bit#(16) tempCoeff = 0;
+		     new_index = 22;
 		     for (Integer i = 0; i < 16; i=i+1) begin
 			tempCoeff[i] = fromMaybe(?,bitBuffer[r_index + 6 + fromInteger(i)]);
 			bitBuffer[r_index + 6 + fromInteger(i)] <= tagged Invalid;
@@ -153,12 +176,15 @@ module mkDecoder(Decode ifc);
 	    end
 	 end
       end
+      //$display("to vect fifo:%h",in);
       toVectFIFO.enq(in);
+      r_index <= r_index + new_index;
    endrule
 
    rule toVect;
       let newCoeff = toVectFIFO.first;
       toVectFIFO.deq;
+      //$display("new coeff:%h",newCoeff);
       Vector#(p,Coeff) outVect = replicate(0);
       if (count == fromInteger(valueOf(TSub#(p,1)))) begin
 	 for (Integer i = 0; i < valueOf(TSub#(p,1)); i=i+1) begin
@@ -173,9 +199,9 @@ module mkDecoder(Decode ifc);
 	 count <= count + 1;
       end
    endrule
-    */  
+     
       
-   
+   /*
    rule loadbit;
       let newBit = inputFIFO.first;
       inputFIFO.deq;
@@ -294,9 +320,9 @@ module mkDecoder(Decode ifc);
 	 outputFIFO.enq(x);
       end
    endrule
-   
+   */
    interface Put request;
-      method Action put (Bit#(1) x);
+      method Action put (Byte x);
 	 inputFIFO.enq(x);
       endmethod
    endinterface
