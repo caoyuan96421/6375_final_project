@@ -4,6 +4,7 @@ import FixedPoint::*;
 import FShow::*;
 import ClientServer::*;
 import GetPut::*;
+import CommTypes::*;
 
 // Image Sample
 typedef Int#(8) Sample;
@@ -15,7 +16,7 @@ typedef FixedPoint#(WI,WF) WSample;
 typedef FixedPoint#(2,WF) DWTCoef;
 
 // Quantized Sample
-typedef Int#(WI) QSample;
+typedef Coeff QSample;
 
 typedef Bit#(TLog#(n)) Size_t#(numeric type n);
 
