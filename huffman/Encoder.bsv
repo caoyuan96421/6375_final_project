@@ -18,7 +18,7 @@ typedef Server#(
 		Byte
 		)Encode#(numeric type p);
 
-function Bool can_write (Vector#(63,Reg#(Maybe#(Bit#(1)))) bitBuffer,Reg#(Bit#(6)) w_index);
+function Bool can_write (Vector#(64,Reg#(Maybe#(Bit#(1)))) bitBuffer,Reg#(Bit#(6)) w_index);
    if (isValid(bitBuffer[w_index])) begin
       return False;
    end
@@ -35,7 +35,7 @@ function Bool can_write (Vector#(63,Reg#(Maybe#(Bit#(1)))) bitBuffer,Reg#(Bit#(6
    end
 endfunction
 
-function Bool can_read (Vector#(63,Reg#(Maybe#(Bit#(1)))) bitBuffer,Reg#(Bit#(6)) r_index);
+function Bool can_read (Vector#(64,Reg#(Maybe#(Bit#(1)))) bitBuffer,Reg#(Bit#(6)) r_index);
    if (isValid(bitBuffer[r_index])) begin
       if (r_index + 3 < 63) begin
 	 if (isValid(bitBuffer[r_index + 3])) return True;
@@ -63,7 +63,7 @@ module mkEncoder(Encode#(p) ifc);
    Reg#(Bit#(16)) coeffReg <- mkReg(0);
    Reg#(Vector#(p,Encoding)) currEncoding <- mkRegU;
    FIFO#(Vector#(p,Encoding)) encodingFIFO <- mkFIFO; //this fifo should also change size
-   Vector#(63,Reg#(Maybe#(Bit#(1)))) bitBuffer <- replicateM(mkReg(Invalid));
+   Vector#(64,Reg#(Maybe#(Bit#(1)))) bitBuffer <- replicateM(mkReg(Invalid));
    Reg#(Bit#(6)) w_index <- mkReg(0);
    Reg#(Bit#(6)) r_index <- mkReg(0);
    
@@ -72,7 +72,7 @@ module mkEncoder(Encode#(p) ifc);
       Vector#(p,Encoding) encoding;
       for (Integer i = 0; i <  valueof(p); i=i+1) begin
 	 let inCoeff = fxptGetInt(inputFIFO.first[i]);
-	 $display("coeff in:",inCoeff);
+	 //$display("coeff in:",inCoeff);
 	 Bit#(16) inCoeffB = pack(inCoeff);
 	 //values are backward here so read forward at end.
 	 //coeffs should be fipped on the decoder side.
@@ -155,7 +155,7 @@ module mkEncoder(Encode#(p) ifc);
       Bit#(6) value = 0;
       Bit#(16) coeff = 0;
       Encoding curr = Encoding{size:0,value:0,coeff:0};
-      $display("coeff count:",coeff_count);
+      //$display("coeff count:",coeff_count);
       //$display("w index:", w_index);
       //$display("valid?:", isValid(bitBuffer[w_index+curr.size-1]));
       if (coeff_count == 0) begin
@@ -167,10 +167,10 @@ module mkEncoder(Encode#(p) ifc);
 	 curr = currEncoding[coeff_count];
       end
       //for (Integer j = 0; j < 63; j=j+1) begin
-	// $display("w bit buffer:",fshow(bitBuffer[j]));
+	//$display("w bit buffer:",fshow(bitBuffer[j]));
       //end
-      $display("w_index:",w_index);
-      $display("curr size:%d,curr value %b",curr.size, curr.value);
+      //$display("w_index:",w_index);
+      //$display("curr size:%d,curr value %b",curr.size, curr.value);
       for (Integer i = 0; i < 22; i=i+1) begin
 	 if (fromInteger(i) < curr.size) begin
 	    Maybe#(Bit#(1)) newBit = ?;
@@ -181,10 +181,6 @@ module mkEncoder(Encode#(p) ifc);
 	       newBit = tagged Valid curr.coeff[i-6];
 	    end
 	    Bit#(6) newIndex = w_index + fromInteger(i);
-	    //if (w_index + fromInteger(i) < 44)
-	    ///	  newIndex = w_index + fromInteger(i);
-	    //      else
-	    //	  newIndex = w_index + fromInteger(i)-44;
 	    bitBuffer[newIndex] <= newBit;
 	 end
       end
@@ -210,6 +206,7 @@ module mkEncoder(Encode#(p) ifc);
       //for (Integer j = 0; j < 63; j=j+1) begin
 	 //$display("r bit buffer:",fshow(bitBuffer[j]));
       //end
+      //$display("buffer read, r index:",r_index);
       for (Integer i = 0; i < 4; i=i+1) begin
 	 out[i] = fromMaybe(?,bitBuffer[r_index + fromInteger(i)]);
 	 bitBuffer[r_index+fromInteger(i)] <= tagged Invalid;
