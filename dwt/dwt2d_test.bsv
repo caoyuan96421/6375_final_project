@@ -12,7 +12,7 @@ typedef 16 N;
 typedef 16 M;
 typedef 4 B;
 typedef 1 T;
-typedef 1 L;
+typedef 3 L;
 
       
 // Unit test for DWT module
@@ -92,10 +92,14 @@ module mkDWT2DTest (Empty);
     	m_line_out <= m_line_out + 1;
     endrule
     
-    rule finish(m_inited && m_line_out == fromInteger(valueOf(N)*valueOf(M)/valueOf(B)*valueOf(T)) && t==fromInteger(valueOf(T)));
-//    	$fclose(m_in);
-//    	$fclose(m_out);
-    	$display("Done");
+    rule flush(m_inited && t==fromInteger(valueOf(T)));
+    	// Keep Flushing with junk when done
+    	$display("%t Flush",$time);
+    	dwt2d.request.put(replicate(0));
+    endrule
+    
+    rule finish(m_inited && m_line_out == fromInteger(valueOf(N)*valueOf(M)/valueOf(B)*valueOf(T)));
+    	$display("Done at %t", $time);
     	$finish;
     endrule
 endmodule

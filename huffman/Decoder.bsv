@@ -178,8 +178,8 @@ module mkDecoder(Decode ifc);
       inputFIFO.deq;
       Bit#(5) tempNumberBits = 0;
       Coeff x = 0;
-      $display("new bit:", newBit);
-      $display("number bits:", numberBits);
+      /*$display("new bit:", newBit);
+      $display("number bits:", numberBits);*/
       case (numberBits)
 	 5'd0: 
 	 begin
@@ -270,7 +270,7 @@ module mkDecoder(Decode ifc);
 	    end 
 	    out[15] = newBit;
 	    x = unpack(truncate(out));
-	    $display("decode:%d",x);
+	    //$display("decode:%d",x);
 	     //will prob have type problems
 	    //$display("bits:%b,int:%d,fp:",out,iout,fshow(x));
 	    tempNumberBits = 0;
@@ -291,11 +291,7 @@ module mkDecoder(Decode ifc);
       end
    endrule
    
-   interface Put request;
-      method Action put (Bit#(1) x);
-	 inputFIFO.enq(x);
-      endmethod
-   endinterface
+   interface Put request = toPut(inputFIFO);
    interface Get response = toGet(outputFIFO);
       
 endmodule

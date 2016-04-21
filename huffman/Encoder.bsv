@@ -185,7 +185,7 @@ module mkEncoder(Encode#(p) ifc);
       end
       if (w_index + curr.size > 63) begin //*fromInteger(valueOf(p))) begin
 	 w_index <= (w_index + curr.size) - 63;//*fromInteger(valueOf(p));
-	 $display("wrap:",w_index + 22 - 63);
+	 //$display("wrap:",w_index + 22 - 63);
       end
       else begin
 	 w_index <= w_index + curr.size;
@@ -220,11 +220,7 @@ module mkEncoder(Encode#(p) ifc);
       outputFIFO.enq(out);
    endrule
   
-   interface Put request;
-      method Action put (Vector#(p,Coeff) x);
-	 inputFIFO.enq(x);
-      endmethod
-   endinterface
+   interface Put request = toPut(inputFIFO);
    interface Get response = toGet(outputFIFO);
 
 endmodule
