@@ -149,8 +149,8 @@ module mkEncoder(Encode#(p) ifc);
    */
    
    //conflicts with buffer_read, we make writes higher priority
-   (* descending_urgency = "bitChunk_v3, buffer_read" *)
-   rule bitChunk_v3 (can_write(bitBuffer,w_index)); //aggressive blocking for now
+   (* descending_urgency = "buffer_read, bitChunk_v3" *)
+   rule bitChunk_v3 (!isValid(bitBuffer[w_index]));//(can_write(bitBuffer,w_index)); //aggressive blocking for now
       Bit#(6) value = 0;
       Bit#(16) coeff = 0;
       Encoding curr = Encoding{size:0,value:0,coeff:0};
@@ -170,34 +170,35 @@ module mkEncoder(Encode#(p) ifc);
       //end
       //$display("w_index:",w_index);
       //$display("curr size:%d,curr value %b",curr.size, curr.value);
-      for (Integer i = 0; i < 22; i=i+1) begin
-	 if (fromInteger(i) < curr.size) begin
-	    Maybe#(Bit#(1)) newBit = ?;
-	    if (i < 6) begin
-	       newBit = tagged Valid curr.value[i];
+      if (!isValid(bitBuffer[w_index+curr.size-1])) begin
+	 for (Integer i = 0; i < 22; i=i+1) begin
+	    if (fromInteger(i) < curr.size) begin
+	       Maybe#(Bit#(1)) newBit = ?;
+	       if (i < 6) begin
+		  newBit = tagged Valid curr.value[i];
+	       end
+	       else begin
+		  newBit = tagged Valid curr.coeff[i-6];
+	       end
+	       Bit#(6) newIndex = w_index + fromInteger(i);
+	       bitBuffer[newIndex] <= newBit;
 	    end
-	    else begin
-	       newBit = tagged Valid curr.coeff[i-6];
-	    end
-	    Bit#(6) newIndex = w_index + fromInteger(i);
-	    bitBuffer[newIndex] <= newBit;
+	 end
+	 if (w_index + curr.size > 63) begin //*fromInteger(valueOf(p))) begin
+	    w_index <= (w_index + curr.size) - 63;//*fromInteger(valueOf(p));
+	    $display("wrap:",w_index + 22 - 63);
+	 end
+	 else begin
+	    w_index <= w_index + curr.size;
+	 end
+	 //$display("coeff_count",coeff_count);
+	 if (coeff_count == fromInteger(valueOf(TSub#(p,1)))) begin
+	    coeff_count <= 0;
+	 end
+	 else begin
+	    coeff_count <= coeff_count + 1;
 	 end
       end
-      if (w_index + curr.size > 63) begin //*fromInteger(valueOf(p))) begin
-	 w_index <= (w_index + curr.size) - 63;//*fromInteger(valueOf(p));
-	 //$display("wrap:",w_index + 22 - 63);
-      end
-      else begin
-	 w_index <= w_index + curr.size;
-      end
-      //$display("coeff_count",coeff_count);
-      if (coeff_count == fromInteger(valueOf(TSub#(p,1)))) begin
-	 coeff_count <= 0;
-      end
-      else begin
-	 coeff_count <= coeff_count + 1;
-      end
-
    endrule
 
    rule buffer_read (can_read(bitBuffer,r_index));//(isValid(bitBuffer[r_index]) && isValid(bitBuffer[r_index+3])); 
