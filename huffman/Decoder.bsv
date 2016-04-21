@@ -8,9 +8,7 @@ import CommTypes::*;
 
 typedef Server#(
 		Byte,
-		//Bit#(1),
 		Vector#(p,Coeff)
-		//Coeff
 		)Decode#(numeric type p);
 
 
