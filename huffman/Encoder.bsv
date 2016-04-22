@@ -1,6 +1,5 @@
 import ClientServer::*;
 import GetPut::*;
-import Fifo::*;
 import FIFO::*;
 import Vector::*;
 import FixedPoint::*;
@@ -71,9 +70,9 @@ module mkEncoder(Encode#(p) ifc);
    rule map2encoding;
       Vector#(p,Encoding) encoding;
       for (Integer i = 0; i <  valueof(p); i=i+1) begin
-	 let inCoeff = fxptGetInt(inputFIFO.first[i]);
+	 let inCoeff = inputFIFO.first[i];
 	 //$display("coeff in:",inCoeff);
-	 Bit#(16) inCoeffB = pack(inCoeff);
+	 Bit#(16) inCoeffB = extend(pack(inCoeff));
 	 //values are backward here so read forward at end.
 	 //coeffs should be fipped on the decoder side.
 	 case (inCoeff)
@@ -222,11 +221,7 @@ module mkEncoder(Encode#(p) ifc);
       outputFIFO.enq(out);
    endrule
   
-   interface Put request;
-      method Action put (Vector#(p,Coeff) x);
-	 inputFIFO.enq(x);
-      endmethod
-   endinterface
+   interface Put request = toPut(inputFIFO);
    interface Get response = toGet(outputFIFO);
 
 endmodule

@@ -42,7 +42,7 @@ module mkHuffmanLoopBack (HuffmanLoopBack#(p) ifc);
    rule e_to_b2bb;
       let x <- e.response.get();
       bb2b.request.put(x);
-      $display("encode to bytes:",fshow(x));
+      //display("encode to bytes:",fshow(x));
    endrule
 
    rule bb2b_to_d;
@@ -53,7 +53,7 @@ module mkHuffmanLoopBack (HuffmanLoopBack#(p) ifc);
    rule d_to_vect;
       let x <- d.response.get();
       Vector#(p,Coeff) outVect = replicate(0);
-      $display("count:",count);
+      //$display("count:",count);
       //$display("coeff:",x);
       if (count == fromInteger(valueOf(TSub#(p,1)))) begin
 	 for (Integer i = 0; i < valueOf(TSub#(p,1)); i=i+1) begin
@@ -68,12 +68,8 @@ module mkHuffmanLoopBack (HuffmanLoopBack#(p) ifc);
 	 count <= count + 1;
       end
    endrule
-*/
-   interface Put request;
-      method Action put (Vector#(p,Coeff) x );
-	 inFIFO.enq(x);
-      endmethod
-   endinterface
+
+   interface Put request = toPut(inFIFO);
    interface Get response = toGet(outFIFO);
 
 endmodule
