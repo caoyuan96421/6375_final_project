@@ -43,13 +43,13 @@ module mkEncoder(HuffmanTable#(s,c,n) ht, Encoder#(c, b) ifc);
 		// All tokens in the Huffman table are REVERSED
 		for (Integer i = 0; i <  valueof(s); i=i+1) begin
 			if ( in == ht[i].tag )begin
-				encode = Encoding{size: ht[i].size, token: {ht[i].token, 0'}};
+				encode = Encoding{size: ht[i].size, token: reverseBits({ht[i].token, '0})};
 				hit = True;
 			end
 		end
 		if(!hit)begin
 			// Not found in encoding table, we just add 111...111 before the input
-			encode = Encoding{size: fromInteger(maxTokenLen), token: {in, 1'}};
+			encode = Encoding{size: fromInteger(maxTokenLen), token: reverseBits({'1, in})};
 		end
 		$display("%t Encoder: encode %d -> %bb'%d", $time, in, encode.token, encode.size);
 		encodingFIFO.enq(encode);

@@ -8,12 +8,13 @@ import DWT2D::*;
 import DWT2DML::*;
 import DWTTypes::*;
 import Encoder_v2::*;
+import Decoder_v2::*;
 import HuffmanTable::*;
 import CommTypes::*;
 
-typedef 16 N;
-typedef 16 M;
-typedef 4 B;
+typedef 8 N;
+typedef 8 M;
+typedef 2 B;
 typedef 1 T;
 typedef 3 L;
 
@@ -24,7 +25,9 @@ module mkDWT2DTest (Empty);
 	DWT2DMLI#(N,M,B,L) dwt2d <- mkDWT2DMLI();
 	IDWT2DMLI#(N,M,B,L) idwt2d <- mkIDWT2DMLI();
 	Encoder#(WC, 4) encoder <- mkEncoder(huffmanTable1);
+	Decoder#(4, WC) decoder <- mkDecoder(huffmanTable1);
 	FIFO#(Vector#(B, Coeff)) efifo <- mkFIFO;
+	Vector#(B, Reg#(Coeff)) dbuf <- replicateM(mkRegU);
 	
 	
 	Reg#(Bool) m_inited <- mkReg(False);
@@ -36,6 +39,7 @@ module mkDWT2DTest (Empty);
 	Reg#(Bit#(32)) m_line_out <- mkReg(0);
 	Reg#(Bit#(4)) t <- mkReg(0);
 	Reg#(Bit#(4)) ecount <- mkReg(0);
+	Reg#(Bit#(4)) dcount <- mkReg(0);
 	
 	rule init(!m_inited);
 		m_inited <= True;
@@ -63,6 +67,27 @@ module mkDWT2DTest (Empty);
 		end
 		else begin
 			ecount <= ecount + 1;
+		end
+	endrule
+	
+	rule encoder2decoder;
+		let x <- encoder.response.get();
+		decoder.request.put(x);
+	endrule
+	
+	rule collectdecoder;
+		let x <- decoder.response.get;
+		if(dcount == fromInteger(valueOf(B))-1)begin
+			Vector#(B, Coeff) v = newVector;
+			for(Integer i=0;i<valueOf(B)-1;i=i+1)
+				v[i] = dbuf[i];
+			v[valueOf(B)-1] = unpack(x);
+			idwt2d.request.put(v);
+			dcount <= 0;
+		end
+		else begin
+			dbuf[dcount] <= unpack(x);
+			dcount <= dcount + 1;
 		end
 	endrule
 	
@@ -100,25 +125,25 @@ module mkDWT2DTest (Empty);
     	$display("Test case %d", t);
     endrule
     
-    /*rule receive(m_inited && m_line_out < fromInteger(valueOf(N)*valueOf(M)/valueOf(B)*valueOf(T)));
+    rule receive(m_inited && m_line_out < fromInteger(valueOf(N)*valueOf(M)/valueOf(B)*valueOf(T)));
     	let x <- idwt2d.response.get();
     	
     	$write("Output %d: ", m_line_out);
         for(Integer i=0;i<valueOf(B);i=i+1)begin
-		$write("%d ", x[i]);
+			$write("%d ", x[i]);
         end
         $display("");
     
     	m_line_out <= m_line_out + 1;
-    endrule*/
-    rule receive_encoder(m_inited);
-    	let x <- encoder.response.get();
+    endrule
+    /*rule receive_decoder(m_inited);
+    	let x <- decoder.response.get();
     	
-    	$write("Output %d: %b", m_line_out, x);
+    	$write("Output %d: %d", m_line_out, x);
         $display("");
     
     	m_line_out <= m_line_out + 1;
-    endrule
+    endrule*/
     
     
     rule flush(m_inited && t==fromInteger(valueOf(T)));
@@ -127,8 +152,8 @@ module mkDWT2DTest (Empty);
     	dwt2d.request.put(replicate(0));
     endrule
     
-    /*rule finish(m_inited && m_line_out == fromInteger(valueOf(N)*valueOf(M)/valueOf(B)*valueOf(T)));
+    rule finish(m_inited && m_line_out == fromInteger(valueOf(N)*valueOf(M)/valueOf(B)*valueOf(T)));
     	$display("Done at %t", $time);
     	$finish;
-    endrule*/
+    endrule
 endmodule
