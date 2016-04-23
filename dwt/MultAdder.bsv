@@ -6,6 +6,7 @@ import ClientServer::*;
 import FIFO::*;
 import SpecialFIFOs::*;
 import GetPut::*;
+import CommTypes::*;
 import DWTTypes::*;
 
 /*
@@ -28,10 +29,3 @@ module mkMultAdder(DWTCoef coef, MultAdder#(n) ifc);
 	endmethod
 	
 endmodule
-/*
-(* synthesize *)
-module mkSizedMultAdder(MultAdder#(MULT_SIZE, WSample, DWTCoef));
-	MultAdder#(MULT_SIZE, WSample, DWTCoef) m <- mkMultAdder;
-	return m;
-endmodule
-*/

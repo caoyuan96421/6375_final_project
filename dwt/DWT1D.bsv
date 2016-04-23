@@ -6,12 +6,15 @@ import ClientServer::*;
 import FIFO::*;
 import SpecialFIFOs::*;
 import GetPut::*;
+import CommTypes::*;
 import DWTTypes::*;
 import MultAdder::*;
 
 /*
 DWT 1D module, with fixed # of samples in each line, specified in the initialization of the interface
 */
+
+typedef DWT#(p) DWT1D#(numeric type n, numeric type p);
 
 function Vector#(TDiv#(m,2), t) evenArray(Vector#(m, t) a);
 	Vector#(TDiv#(m,2), t) b = ?;

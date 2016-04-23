@@ -6,39 +6,14 @@ import ClientServer::*;
 import GetPut::*;
 import CommTypes::*;
 
-// Image Sample
-typedef Int#(8) Sample;
-
-// Wavelet Transformed sample
-typedef 14 WI;
-typedef 18 WF;
-typedef FixedPoint#(WI,WF) WSample;
-typedef FixedPoint#(2,WF) DWTCoef;
-
-// Quantized Sample
-typedef Coeff QSample;
-
 typedef Bit#(TLog#(n)) Size_t#(numeric type n);
+
+Integer sample_shift = valueOf(TExp#(TSub#(WS,1))); // Shift of sample value
 
 typedef Server#(
 	Vector#(p, WSample),
 	Vector#(p, WSample)
 ) DWT#(numeric type p);
-
-typedef DWT#(p) DWT1D#(numeric type n, numeric type p);
-typedef DWT#(p) DWT2D#(numeric type n, numeric type m, numeric type p);
-typedef DWT#(p) DWT2DML#(numeric type n, numeric type m, numeric type p, numeric type l);
-
-// Integer DWT interfaces
-typedef Server#(
-	Vector#(p, Sample),
-	Vector#(p, QSample)
-) DWT2DMLI#(numeric type n, numeric type m, numeric type p, numeric type l);
-
-typedef Server#(
-	Vector#(p, QSample),
-	Vector#(p, Sample)
-) IDWT2DMLI#(numeric type n, numeric type m, numeric type p, numeric type l);
 
 function Vector#(p,WSample) toWSample(Vector#(p,Int#(q)) v) provisos( Add#(q, a__, WI) );
 	Vector#(p, WSample) x = replicate(0);

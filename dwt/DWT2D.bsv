@@ -9,8 +9,12 @@ import SpecialFIFOs::*;
 import GetPut::*;
 import DWTTypes::*;
 import MultAdder::*;
+import CommTypes::*;
 import DWT1D::*;
 import BRAMFIFO::*;
+
+
+typedef DWT#(p) DWT2D#(numeric type n, numeric type m, numeric type p);
 
 /*
 Stage 1        Stage 2      Stage 3      Stage 4
