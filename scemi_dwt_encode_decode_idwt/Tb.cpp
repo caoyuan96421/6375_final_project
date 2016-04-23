@@ -25,7 +25,7 @@ void runtest(InportProxyT<DWT_Line>& port){
 		for(int i=0;i<N;i+=P){
 			DWT_Line block;
 			for(int k=0;k<P;k++){
-				block[k] = (int8_t)(in_data[i+k][j] - 128);
+				block[k] = (uint8_t)in_data[i+k][j];
 			}
 			port.sendMessage(block);
 		}
@@ -43,11 +43,12 @@ void out_cb(void* x, const DWT_Line& data){
 	int j=out_count / (N/P);
 	int i=(out_count % (N/P))*P;
 	for(int k=0;k<P;k++){
-		out_data[i+k][j] = (uint8_t)data[k] + 128;
+		out_data[i+k][j] = (uint8_t)data[k];
 		fprintf(fout, "%u ", out_data[i+k][j]);
 	}
 	if(i+P == N){
 		fprintf(fout, "\n");
+		fflush(fout);
 		printf("Line %d received.\n", j);
 	}
 	out_count ++;

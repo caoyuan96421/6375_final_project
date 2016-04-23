@@ -9,9 +9,6 @@ import Xilinx::*;
 import Vector::*;
 
 import CommTypes::*;
-import DWTTypes::*;
-import DWT1D::*;
-import DWT2D::*;
 import DWT2DML::*;
 
 import Encoder_v2::*;
