@@ -21,13 +21,13 @@ long int gotcount = 0;
 
 void out_cb(void* x, const BitT<4>& res)
 {
-  if (gotcount < putcount) {
+  //if (gotcount < putcount) {
     char a = res.get(); 
-    std::cout << "Data Out:" << std::hex << static_cast<int>(a) << std::endl;
+    //std::cout << "Data Out:" << std::hex << static_cast<int>(a) << std::endl;
     fputc(a, outpcm);
     gotcount++;
     std::cout << "Got Count:" << gotcount << "Put Count:" << putcount << std::endl;
-    if ((gotcount == putcount) && outpcm) {
+    /*if ((gotcount == putcount) && outpcm) {
       std::cout << "out done!" << std::endl;
       fclose(outpcm);
       outpcm = NULL;
@@ -39,6 +39,7 @@ void out_cb(void* x, const BitT<4>& res)
     outpcm = NULL;
     done = true;
   }
+    */
 }
 
 void toFPGA(InportProxyT<BitT<4> >& fromhost)
@@ -52,7 +53,7 @@ void toFPGA(InportProxyT<BitT<4> >& fromhost)
   while (!indone) {
     char a = fgetc(inpcm);
 
-    if (a == -1 ) { 
+    if (a == -1) { 
       indone = true;
       fclose(inpcm);
       inpcm = NULL;

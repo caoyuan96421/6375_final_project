@@ -16,7 +16,7 @@ import Connectable::*;
 import DDR3OutstandingLimit::*;
 
 import CommTypes::*;
-import CommPipeline::*;
+import FullPipeline::*;
 
 typedef CommIfc DutInterface;
 
@@ -32,7 +32,7 @@ typedef Empty SceMiLayer;
 
 (* synthesize *)
 module [Module] mkDutWrapper (DutInterface);
-   let m <- mkCommPipeline();
+   let m <- mkFullPipeline();
    return m;
 endmodule
 
