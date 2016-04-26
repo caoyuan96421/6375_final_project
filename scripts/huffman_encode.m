@@ -1,4 +1,4 @@
-function [ bits,bytes ] = huffman_encode( coeffs )
+function [ bytes,bits ] = huffman_encode( coeffs )
 %huffman encoding algorithm
 %   bits are bit values, useful for debug comparisions
 %   bytes can be written to file and sent to fpga
@@ -28,11 +28,18 @@ for i = 1:len(2)
         otherwise
             bits = [bits , uint8(1),uint8(1),uint8(1),uint8(1),uint8(1),uint8(1)];
             co = uint16(de2bi(typecast(int16(coeff),'uint16')));
-            bits = [bits , co];
+            nB_temp = size(co);
+            if (nB_temp > 12)
+                co = co(1:12);
+            end
             nB = size(co);
-            for j = 1:(16-nB(2))
+            %co = fliplr(co);
+            for j = 1:(12-nB(2))
                 bits = [bits , uint8(0)];
             end
+            co = fliplr(co);
+            bits = [bits , co];
+            
     end
 end
 numBits = size(bits)
