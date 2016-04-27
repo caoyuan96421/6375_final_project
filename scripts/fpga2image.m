@@ -13,6 +13,8 @@ for i = 1:N(1)
     s = min(n_c(2),s);
     Y_n(i,1:s+1-f) = new_coeffs(f:s);
 end
-
-R = uint8(waveletcdf97(Y_n,-L)*255);
+for j=1:L
+    Y_n=unscramble(Y_n, L-j);
+end
+R = waveletcdf97(Y_n,-L)/255;
 imshow(R);

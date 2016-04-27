@@ -1,6 +1,6 @@
 ImageFile = 'saturn_256.jpg';
 t =imread(ImageFile);
-X = double(imread(ImageFile))/255;
+X = double(imread(ImageFile));
 N = size(X);
 X = padarray(X,[256-N(1),256-N(2),0],'post');
 
@@ -11,9 +11,9 @@ X = padarray(X,[256-N(1),256-N(2),0],'post');
 N = size(X)
 L = 3;
 Y = waveletcdf97(X,L);
-% for i=1:L
-%     Y=scramble(Y, i);
-% end
+for i=1:L
+    Y=scramble(Y, i-1);
+end
 T =[];
 for i = 1:N(1)
     f = (i-1)*N(1)+1;

@@ -55,7 +55,7 @@ lenBits = size(bits)
 
 i = 1;
 while ( i < lenBits(2))
-    %i = i
+    i = i;
     if (mat2str(bits(i:i+1)) == '[1 0]')
         coeffs = [coeffs,0];
         i = i + 2;
@@ -85,6 +85,8 @@ while ( i < lenBits(2))
         coeffs = [coeffs,-4];
         i = i + 6;
     elseif (mat2str(bits(i:i+5)) == '[1 1 1 1 1 1]')
+        t = bits(i:i+17);
+        t1 = bits(i+6:i+17);
         test = int16(bin2dec(num2str(bits(i+6:i+17))));
         if (test > 2^11)
             test = test - 2^12;

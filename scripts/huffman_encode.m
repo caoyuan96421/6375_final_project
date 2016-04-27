@@ -29,8 +29,8 @@ for i = 1:len(2)
             bits = [bits , uint8(1),uint8(1),uint8(1),uint8(1),uint8(1),uint8(1)];
             co = uint16(de2bi(typecast(int16(coeff),'uint16')));
             nB_temp = size(co);
-            if (nB_temp > 12)
-                co = co(1:12);
+            if (nB_temp(2) > 12)
+                co = co(:,1:12);
             end
             nB = size(co);
             %co = fliplr(co);
