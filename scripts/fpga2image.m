@@ -1,4 +1,4 @@
-f = fopen('out_saturn_scrambled.pcm','rb');
+f = fopen('out.pcm','rb');
 bytes = fread(f);
 fclose(f);
 bytes = uint8(bytes);
@@ -16,5 +16,5 @@ end
 for j=1:L
     Y_n=unscramble(Y_n, L-j);
 end
-R = waveletcdf97(Y_n,-L);
+R = waveletcdf97(Y_n,-L)/255;
 imshow(R);
