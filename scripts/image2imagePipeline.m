@@ -16,9 +16,9 @@ X = padarray(X,[256-N(1),256-N(2),0],'post');
 N = size(X);
 L = 3;
 Y = waveletcdf97(X,L);
-% for i=1:L
-%     Y=scramble(Y, i);
-% end
+for i=1:L
+    Y=scramble(Y, i-1);
+end
 for i = 1:N(1)
     f = (i-1)*N(1)+1;
     s = (i)*N(1);
@@ -39,6 +39,8 @@ for i = 1:N(1)
     s = (i)*N(1);
     Y_n(i,:) = new_coeffs(f:s);
 end
-%Y_n = double(reshape(out_coeffs,[8 8]));
+for j=1:L
+    Y_n=unscramble(Y_n, L-j);
+end
 R = waveletcdf97(Y_n,-L);
 imshow(R);
