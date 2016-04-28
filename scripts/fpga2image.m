@@ -16,5 +16,6 @@ end
 for j=1:L
     Y_n=unscramble(Y_n, L-j);
 end
-R = waveletcdf97(Y_n,-L)/255;
-imshow(R);
+R = waveletcdf97(Y_n,-L);
+R = R + 128;
+imshow(uint8(R));

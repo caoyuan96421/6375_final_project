@@ -61,22 +61,16 @@ module mkDWT2DMLP(
 				// Result from highest level LL component 
 				let x <- dwt2ds[i].response.get();
 				if(i != valueOf(l)-1 && (line[i] & fromInteger(2*t - 1)) == 0 && sample[i] < fromInteger(np / (2*t)))begin
-					$write("%t DWTML: Level %d, %d %d -> next ", $time, i, line[i], sample[i]);
+					$display("%t DWTML: Level %d, %d %d -> next ", $time, i, line[i], sample[i]);
 					// New LL component, send into next stage
 					dwt2ds[i+1].request.put(x);
 				end
 				else begin
-					$write("%t DWTML: Level %d, %d %d -> store ",$time, i, line[i], sample[i]);
+					$display("%t DWTML: Level %d, %d %d -> store ",$time, i, line[i], sample[i]);
 					// store in buffer
 					buffer[i].enq(x);
 				end
-`ifdef SIM
-		//for(Integer j=0;j<valueOf(p);j=j+1)begin
-		//	fxptWrite(4, x[j]);
-		//	$write(" ");
-		//end
-		$display("");
-`endif
+			$display("");
 			end
 			else if(i != 0)begin
 				// HF components calculated in previous stages, just pass to next stage buffer
@@ -132,23 +126,16 @@ module mkIDWT2DMLP(
 				// Result from highest level LL component 
 				let x = ?;
 				if(i != fromInteger(valueOf(l)-1) && (line[i] & fromInteger(2*t - 1)) == 0 && sample[i] < fromInteger(np / (2*t)))begin
-					$write("%t IDWTML: Level %d, %d %d -> previous ", $time, i, line[i], sample[i]);
+					$display("%t IDWTML: Level %d, %d %d -> previous ", $time, i, line[i], sample[i]);
 					// New LL component, fetch from previous stage
 					x <- idwt2ds[i+1].response.get;
 				end
 				else begin
-					$write("%t IDWTML: Level %d, %d %d -> load ",$time, i, line[i], sample[i]);
+					$display("%t IDWTML: Level %d, %d %d -> load ",$time, i, line[i], sample[i]);
 					// load from buffer
 					x = buffer[i].first; buffer[i].deq;
 				end
 				idwt2ds[i].request.put(x);
-`ifdef SIM
-		//for(Integer j=0;j<valueOf(p);j=j+1)begin
-		//	fxptWrite(4, x[j]);
-		//	$write(" ");
-		//end
-		$display("");
-`endif
 			end
 			else if(i != 0)begin
 				$display("%t IDWTML: Level %d, %d %d -> pass", $time, i, line[i], sample[i]);

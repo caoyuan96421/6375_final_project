@@ -30,19 +30,10 @@ typedef FixedPoint#(2,WF) DWTCoef;
 typedef 12 WC;
 typedef Int#(WC) Coeff;
 
-//typedef Bit#(24) Addr;
-//add line type
-typedef Server#(
-	Byte, Byte
-) ServerInterface;
-
 interface CommIfc;
-    method Action putByteInput(Byte in);
-    method ActionValue#(Byte) getByteOutput();
-    method Action doInit(Bool x);
-    //interface ServerInterface serverinterface;
+    interface Server#(Byte, Byte) data;
+    interface Put#(Bit#(1)) start;
+    interface Get#(Bit#(64)) count;
     interface DDR3_Client ddr3client;
-    interface Put#(Bool) setmode;
-    //interface WideMemInitIfc memInit;
 endinterface
 

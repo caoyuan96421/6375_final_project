@@ -7,7 +7,7 @@ bsc-link-options:    -Xc++ -O0 -keep-fires
 hide-target
 top-module:             mkBridge
 top-file:               ../Bridge.bsv
-bsv-source-directories: ../../scemi ../../src ../../src/includes ../../src/serialize ../../src/deserialize
+bsv-source-directories: .. ../.. ../../dwt ../../huffman ../../includes ../../serialize ../../deserialize
 verilog-directory:      vlog_dut
 binary-directory:       bdir_dut
 simulation-directory:   simdir_dut

@@ -4,6 +4,7 @@ X = double(imread(ImageFile));
 N = size(X);
 X = padarray(X,[256-N(1),256-N(2),0],'post');
 
+X = X - 128;
 %X = rgb2ycbcr(X); 
 %X = X(:,:,1);
 %X = randi([-4,3],8,8);

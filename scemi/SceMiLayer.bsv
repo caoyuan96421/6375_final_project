@@ -14,6 +14,7 @@ import Types::*;
 import MemTypes::*;
 import Connectable::*;
 import DDR3OutstandingLimit::*;
+import BRAMFIFO::*;
 
 import CommTypes::*;
 import FullPipeline::*;
@@ -32,8 +33,30 @@ typedef Empty SceMiLayer;
 
 (* synthesize *)
 module [Module] mkDutWrapper (DutInterface);
-   let m <- mkFullPipeline();
-   return m;
+	let m <- mkFullPipeline();
+	FIFO#(Byte) ififo <- mkSizedBRAMFIFO(131072); // 512Kb
+	FIFO#(Byte) ofifo <- mkSizedBRAMFIFO(131072); // 512Kb
+	
+	rule feed;
+		let x = ififo.first; ififo.deq;
+		m.data.request.put(x);
+	endrule
+	
+	rule fetch;
+		let y <- m.data.response.get;
+		ofifo.enq(y);
+	endrule
+
+	interface Server data;
+		interface Put request = toPut(ififo);
+		interface Get response = toGet(ofifo);
+	endinterface
+
+	interface Put start = m.start;
+	
+	interface Get count = m.count;
+
+	interface DDR3_Client ddr3client = m.ddr3client;
 endmodule
 
 module [SceMiModule] mkSceMiLayer ( SceMiLayer );
@@ -43,9 +66,9 @@ module [SceMiModule] mkSceMiLayer ( SceMiLayer );
     SceMiClockPortIfc clk_port <- mkSceMiClockPort(conf);
     DutInterface dut <- buildDutWithSoftReset(mkDutWrapper, clk_port);
 
-    Empty tohost <- mkGetXactor(toGet(dut.getByteOutput), clk_port);
-    Empty fromhost <- mkPutXactor(toPut(dut.putByteInput), clk_port);
-    Empty setmode <- mkPutXactor(toPut(dut.doInit), clk_port);
+    Empty data <- mkServerXactor(dut.data, clk_port);
+    Empty start <- mkPutXactor(dut.start, clk_port);
+    Empty count <- mkGetXactor(dut.count, clk_port);
 
     Empty shutdown <- mkShutdownXactor();
 
