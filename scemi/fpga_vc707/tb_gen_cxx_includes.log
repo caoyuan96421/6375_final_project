@@ -1,0 +1,31 @@
+Loading all packages ...
+Loading all packages complete.
+Creating in-line probe code file ...
+Code file tbinclude/SceMiProbes.cxx has been created.
+Creating in-line probe code file complete.
+Creating header files ...
+Header file tbinclude/PowerStruct.h has been created.
+Header file tbinclude/PowerAssoc.h has been created.
+Header file tbinclude/ProbeControl.h has been created.
+Header file tbinclude/PrbNum.h has been created.
+Header file tbinclude/CosimStruct.h has been created.
+Header file tbinclude/PowerProbe.h has been created.
+Header file tbinclude/PwPrbKind.h has been created.
+Header file tbinclude/ToHost.h has been created.
+Header file tbinclude/FromHost.h has been created.
+Header file tbinclude/SimulationControlReq.h has been created.
+Header file tbinclude/SimulationStatusResp.h has been created.
+Header file tbinclude/Tag.h has been created.
+Header file tbinclude/Exception.h has been created.
+Header file tbinclude/Byte.h has been created.
+Header file tbinclude/CacheWordSelect.h has been created.
+Header file tbinclude/Addr.h has been created.
+Header file tbinclude/Data.h has been created.
+Header file tbinclude/Instruction.h has been created.
+Header file tbinclude/TLPFirstDWBE.h has been created.
+Header file tbinclude/TLPLastDWBE.h has been created.
+Header file tbinclude/CreditCount.h has been created.
+Header file tbinclude/Lag.h has been created.
+Header file tbinclude/ClkNextRdy.h has been created.
+Header file tbinclude/SceMiHeaders.h has been created.
+Creating header files complete.
