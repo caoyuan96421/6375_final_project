@@ -34,8 +34,8 @@ typedef Empty SceMiLayer;
 (* synthesize *)
 module [Module] mkDutWrapper (DutInterface);
 	let m <- mkFullPipeline();
-	FIFO#(Byte) ififo <- mkSizedBRAMFIFO(131072); // 512Kb
-	FIFO#(Byte) ofifo <- mkSizedBRAMFIFO(131072); // 512Kb
+	FIFO#(Byte) ififo <- mkSizedBRAMFIFO(2**20); // 4Mb
+	FIFO#(Byte) ofifo <- mkSizedBRAMFIFO(2**20); // 4Mb
 	
 	rule feed;
 		let x = ififo.first; ififo.deq;

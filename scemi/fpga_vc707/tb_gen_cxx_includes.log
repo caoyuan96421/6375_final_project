@@ -15,10 +15,12 @@ Header file tbinclude/ToHost.h has been created.
 Header file tbinclude/FromHost.h has been created.
 Header file tbinclude/SimulationControlReq.h has been created.
 Header file tbinclude/SimulationStatusResp.h has been created.
+Header file tbinclude/Mem_data_t.h has been created.
 Header file tbinclude/Tag.h has been created.
 Header file tbinclude/Exception.h has been created.
 Header file tbinclude/Byte.h has been created.
 Header file tbinclude/CacheWordSelect.h has been created.
+Header file tbinclude/DDR3ByteEn.h has been created.
 Header file tbinclude/Addr.h has been created.
 Header file tbinclude/Data.h has been created.
 Header file tbinclude/Instruction.h has been created.

@@ -1,46 +1,61 @@
 checking package dependencies
 compiling ../ResetXactor.bsv
-compiling ../../src/includes/Types.bsv
-compiling ../../src/includes/MemTypes.bsv
-compiling ../../src/includes/DDR3OutstandingLimit.bsv
-compiling ../../src/CommTypes.bsv
-compiling ../../src/includes/CacheTypes.bsv
-compiling ../../src/includes/ProcTypes.bsv
-compiling ../../src/includes/MemInit.bsv
-compiling ../../src/includes/Ehr.bsv
-compiling ../../src/includes/Fifo.bsv
-compiling ../../src/includes/SimMem.bsv
-compiling ../../src/includes/WideMemInit.bsv
-compiling ../../src/serialize/SerializerBTP.bsv
-code generation for mkSerializerBTP starts
-Verilog file created: vlog_dut/mkSerializerBTP.v
-Elaborated module file created: bdir_dut/mkSerializerBTP.ba
-compiling ../../src/serialize/SerializerPTW.bsv
-code generation for mkSerializerPTW starts
-Verilog file created: vlog_dut/mkSerializerPTW.v
-Elaborated module file created: bdir_dut/mkSerializerPTW.ba
-compiling ../../src/deserialize/DeserializerPTB.bsv
-code generation for mkDeserializerPTB starts
-Verilog file created: vlog_dut/mkDeserializerPTB.v
-Elaborated module file created: bdir_dut/mkDeserializerPTB.ba
-compiling ../../src/deserialize/DeserializerWTP.bsv
-code generation for mkDeserializerWTP starts
-Verilog file created: vlog_dut/mkDeserializerWTP.v
-Elaborated module file created: bdir_dut/mkDeserializerWTP.ba
-compiling ../../src/includes/MemUtil.bsv
-compiling ../../src/CommPipeline.bsv
-Warning: "../../src/CommPipeline.bsv", line 22, column 23: (T0054)
-  Field not defined: `setmode'
-code generation for mkCommPipeline starts
-Warning: "../../src/CommPipeline.bsv", line 22, column 8: (G0020)
-  System functions (e.g., $display) called by interface methods execute in an
-  unpredictable order during Verilog simulations.
-      Top-level interface method `getByteOutput' calls a system function
-      (e.g., $display) at "../../src/CommPipeline.bsv", line 95, column 7
-Verilog file created: vlog_dut/mkCommPipeline.v
-Elaborated module file created: bdir_dut/mkCommPipeline.ba
+compiling ../../includes/Types.bsv
+compiling ../../includes/MemTypes.bsv
+compiling ../../includes/DDR3OutstandingLimit.bsv
+compiling ../../CommTypes.bsv
+compiling ../../dwt/DWTTypes.bsv
+compiling ../../huffman/HuffmanTable.bsv
+compiling ../../includes/ProcTypes.bsv
+compiling ../../includes/CacheTypes.bsv
+compiling ../../dwt/MultAdder.bsv
+compiling ../../dwt/DWT1D.bsv
+compiling ../../dwt/DWT2D.bsv
+compiling ../../dwt/DWT2DML.bsv
+compiling ../../includes/Ehr.bsv
+compiling ../../includes/Fifo.bsv
+compiling ../../includes/SimMem.bsv
+compiling ../../includes/MemUtil.bsv
+compiling ../../huffman/Encoder_v2.bsv
+compiling ../../huffman/Decoder_v2.bsv
+compiling ../../FullPipeline.bsv
+code generation for mkFullPipeline starts
+Warning: "Prelude.bs", line 2986, column 0: (G0024)
+  The function unfolding steps interval has been exceeded when unfolding
+  `bind_'. The current number of steps is 100000. Next warning at 200000
+  steps. Elaboration terminates at 1000000 steps.
+  During elaboration of `line_re' at "../../dwt/DWT2D.bsv", line 433, column
+  26.
+  During elaboration of `m' at "../../dwt/DWT2D.bsv", line 726, column 23.
+  During elaboration of `idwt' at "../../dwt/DWT2DML.bsv", line 200, column
+  65.
+  During elaboration of `m' at "../../dwt/DWT2DML.bsv", line 252, column 30.
+  During elaboration of `idwt2d' at "../../FullPipeline.bsv", line 43, column
+  29.
+  During elaboration of `mkFullPipeline' at "../../FullPipeline.bsv", line 31,
+  column 8.
+Warning: "Prelude.bs", line 578, column 27: (G0024)
+  The function unfolding steps interval has been exceeded when unfolding
+  `Prelude.PrimIndex~Prelude.Integer~32'. The current number of steps is
+  200000. Next warning at 300000 steps. Elaboration terminates at 1000000
+  steps.
+  During elaboration of the body of rule `stage_chunk' at
+  "../../huffman/Encoder_v2.bsv", line 58, column 14.
+  During elaboration of `encoder' at "../../FullPipeline.bsv", line 44, column
+  25.
+  During elaboration of `mkFullPipeline' at "../../FullPipeline.bsv", line 31,
+  column 8.
+Warning: "../../FullPipeline.bsv", line 31, column 8: (G0117)
+  Rule `start_put' shadows the effects of `idwt_to_ddr3' when they execute in
+  the same clock cycle. Affected method calls:
+    mode.write
+  To silence this warning, use the `-no-warn-action-shadowing' flag.
+Schedule dump file created: info_dut/mkFullPipeline.sched
+Verilog file created: vlog_dut/mkFullPipeline.v
+Elaborated module file created: bdir_dut/mkFullPipeline.ba
 compiling ../SceMiLayer.bsv
 code generation for mkDutWrapper starts
+Schedule dump file created: info_dut/mkDutWrapper.sched
 Verilog file created: vlog_dut/mkDutWrapper.v
 Elaborated module file created: bdir_dut/mkDutWrapper.ba
 compiling ../Bridge.bsv
@@ -114,7 +129,7 @@ Warning: "SceMiNoC.bsv", line 496, column 9: (G0043)
   During elaboration of `prb_control' at "../SceMiSerialProbe.bsv", line 1753,
   column 8.
   During elaboration of `dut' at "../ResetXactor.bsv", line 50, column 28.
-  During elaboration of `dut' at "../SceMiLayer.bsv", line 44, column 18.
+  During elaboration of `dut' at "../SceMiLayer.bsv", line 67, column 18.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
@@ -141,7 +156,7 @@ Warning: "SceMiNoC.bsv", line 501, column 9: (G0043)
   During elaboration of `prb_control' at "../SceMiSerialProbe.bsv", line 1753,
   column 8.
   During elaboration of `dut' at "../ResetXactor.bsv", line 50, column 28.
-  During elaboration of `dut' at "../SceMiLayer.bsv", line 44, column 18.
+  During elaboration of `dut' at "../SceMiLayer.bsv", line 67, column 18.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
@@ -166,7 +181,7 @@ Warning: "SceMiNoC.bsv", line 316, column 9: (G0043)
   During elaboration of `prb_control' at "../SceMiSerialProbe.bsv", line 1753,
   column 8.
   During elaboration of `dut' at "../ResetXactor.bsv", line 50, column 28.
-  During elaboration of `dut' at "../SceMiLayer.bsv", line 44, column 18.
+  During elaboration of `dut' at "../SceMiLayer.bsv", line 67, column 18.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
@@ -193,7 +208,7 @@ Warning: "SceMiNoC.bsv", line 321, column 9: (G0043)
   During elaboration of `prb_control' at "../SceMiSerialProbe.bsv", line 1753,
   column 8.
   During elaboration of `dut' at "../ResetXactor.bsv", line 50, column 28.
-  During elaboration of `dut' at "../SceMiLayer.bsv", line 44, column 18.
+  During elaboration of `dut' at "../SceMiLayer.bsv", line 67, column 18.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
@@ -217,7 +232,7 @@ Warning: "SceMiNoC.bsv", line 316, column 9: (G0043)
   31.
   During elaboration of `req' at "../SceMiXactors.bsv", line 397, column 8.
   During elaboration of `softrst' at "../ResetXactor.bsv", line 51, column 11.
-  During elaboration of `dut' at "../SceMiLayer.bsv", line 44, column 18.
+  During elaboration of `dut' at "../SceMiLayer.bsv", line 67, column 18.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
@@ -243,7 +258,7 @@ Warning: "SceMiNoC.bsv", line 321, column 9: (G0043)
   31.
   During elaboration of `req' at "../SceMiXactors.bsv", line 397, column 8.
   During elaboration of `softrst' at "../ResetXactor.bsv", line 51, column 11.
-  During elaboration of `dut' at "../SceMiLayer.bsv", line 44, column 18.
+  During elaboration of `dut' at "../SceMiLayer.bsv", line 67, column 18.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
@@ -267,7 +282,7 @@ Warning: "SceMiNoC.bsv", line 496, column 9: (G0043)
   32.
   During elaboration of `resp' at "../SceMiXactors.bsv", line 398, column 8.
   During elaboration of `softrst' at "../ResetXactor.bsv", line 51, column 11.
-  During elaboration of `dut' at "../SceMiLayer.bsv", line 44, column 18.
+  During elaboration of `dut' at "../SceMiLayer.bsv", line 67, column 18.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
@@ -293,7 +308,55 @@ Warning: "SceMiNoC.bsv", line 501, column 9: (G0043)
   32.
   During elaboration of `resp' at "../SceMiXactors.bsv", line 398, column 8.
   During elaboration of `softrst' at "../ResetXactor.bsv", line 51, column 11.
-  During elaboration of `dut' at "../SceMiLayer.bsv", line 44, column 18.
+  During elaboration of `dut' at "../SceMiLayer.bsv", line 67, column 18.
+  During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
+  During elaboration of `scemi' at
+  "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
+  line 54, column 41.
+  During elaboration of `mkBridge' at
+  "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
+  line 20, column 8.
+Warning: "SceMiNoC.bsv", line 316, column 9: (G0043)
+  Multiple reset signals influence rule
+  `scemi_data_req_inport_detect_scemi_reset'.
+  This can lead to inconsistent, non-atomic results when not all of these
+  signals are asserted.
+  Method calls by reset:
+    Reset 1 (scemi_rstgen_final_reset.reset_out):
+      scemi_data_req_inport_in_reset_uclk.read
+    Reset 2 (scemi_data_req_inport_nocResetUClock.gen_rst):
+      scemi_data_req_inport_starting_reset.send
+  During elaboration of rule `detect_scemi_reset' at "SceMiNoC.bsv", line 316,
+  column 9.
+  During elaboration of `inport' at "../SceMiXactors.bsv", line 251, column
+  31.
+  During elaboration of `req' at "../SceMiXactors.bsv", line 397, column 8.
+  During elaboration of `data' at "../SceMiLayer.bsv", line 69, column 11.
+  During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
+  During elaboration of `scemi' at
+  "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
+  line 54, column 41.
+  During elaboration of `mkBridge' at
+  "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
+  line 20, column 8.
+Warning: "SceMiNoC.bsv", line 321, column 9: (G0043)
+  Multiple reset signals influence rule
+  `scemi_data_req_inport_detect_end_of_scemi_reset'.
+  This can lead to inconsistent, non-atomic results when not all of these
+  signals are asserted.
+  Method calls by reset:
+    Reset 1 (scemi_rstgen_final_reset.reset_out):
+      scemi_data_req_inport_in_reset_uclk.read
+      scemi_data_req_inport_prev_reset_uclk.read
+      scemi_data_req_inport_prev_reset_uclk.write
+    Reset 2 (scemi_data_req_inport_nocResetUClock.gen_rst):
+      scemi_data_req_inport_ending_reset.send
+  During elaboration of rule `detect_end_of_scemi_reset' at "SceMiNoC.bsv",
+  line 321, column 9.
+  During elaboration of `inport' at "../SceMiXactors.bsv", line 251, column
+  31.
+  During elaboration of `req' at "../SceMiXactors.bsv", line 397, column 8.
+  During elaboration of `data' at "../SceMiLayer.bsv", line 69, column 11.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
@@ -303,19 +366,20 @@ Warning: "SceMiNoC.bsv", line 501, column 9: (G0043)
   line 20, column 8.
 Warning: "SceMiNoC.bsv", line 496, column 9: (G0043)
   Multiple reset signals influence rule
-  `scemi_tohost_outport_detect_scemi_reset'.
+  `scemi_data_resp_outport_detect_scemi_reset'.
   This can lead to inconsistent, non-atomic results when not all of these
   signals are asserted.
   Method calls by reset:
     Reset 1 (scemi_rstgen_final_reset.reset_out):
-      scemi_tohost_outport_in_reset_uclk.read
-    Reset 2 (scemi_tohost_outport_nocResetUClock.gen_rst):
-      scemi_tohost_outport_starting_reset.send
+      scemi_data_resp_outport_in_reset_uclk.read
+    Reset 2 (scemi_data_resp_outport_nocResetUClock.gen_rst):
+      scemi_data_resp_outport_starting_reset.send
   During elaboration of rule `detect_scemi_reset' at "SceMiNoC.bsv", line 496,
   column 9.
   During elaboration of `outport' at "../SceMiXactors.bsv", line 329, column
   32.
-  During elaboration of `tohost' at "../SceMiLayer.bsv", line 46, column 11.
+  During elaboration of `resp' at "../SceMiXactors.bsv", line 398, column 8.
+  During elaboration of `data' at "../SceMiLayer.bsv", line 69, column 11.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
@@ -325,21 +389,22 @@ Warning: "SceMiNoC.bsv", line 496, column 9: (G0043)
   line 20, column 8.
 Warning: "SceMiNoC.bsv", line 501, column 9: (G0043)
   Multiple reset signals influence rule
-  `scemi_tohost_outport_detect_end_of_scemi_reset'.
+  `scemi_data_resp_outport_detect_end_of_scemi_reset'.
   This can lead to inconsistent, non-atomic results when not all of these
   signals are asserted.
   Method calls by reset:
     Reset 1 (scemi_rstgen_final_reset.reset_out):
-      scemi_tohost_outport_in_reset_uclk.read
-      scemi_tohost_outport_prev_reset_uclk.read
-      scemi_tohost_outport_prev_reset_uclk.write
-    Reset 2 (scemi_tohost_outport_nocResetUClock.gen_rst):
-      scemi_tohost_outport_ending_reset.send
+      scemi_data_resp_outport_in_reset_uclk.read
+      scemi_data_resp_outport_prev_reset_uclk.read
+      scemi_data_resp_outport_prev_reset_uclk.write
+    Reset 2 (scemi_data_resp_outport_nocResetUClock.gen_rst):
+      scemi_data_resp_outport_ending_reset.send
   During elaboration of rule `detect_end_of_scemi_reset' at "SceMiNoC.bsv",
   line 501, column 9.
   During elaboration of `outport' at "../SceMiXactors.bsv", line 329, column
   32.
-  During elaboration of `tohost' at "../SceMiLayer.bsv", line 46, column 11.
+  During elaboration of `resp' at "../SceMiXactors.bsv", line 398, column 8.
+  During elaboration of `data' at "../SceMiLayer.bsv", line 69, column 11.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
@@ -349,20 +414,21 @@ Warning: "SceMiNoC.bsv", line 501, column 9: (G0043)
   line 20, column 8.
 Warning: "GetPut.bs", line 337, column 9: (G0043)
   Multiple reset signals influence rule
-  `scemi_tohost_connect_get_mkConnectionGetPut'.
+  `scemi_data_resp_connect_get_mkConnectionGetPut'.
   This can lead to inconsistent, non-atomic results when not all of these
   signals are asserted.
   Method calls by reset:
     Reset 1 (scemi_clk_port_cReset.gen_rst):
-      scemi_tohost_res_fifo.RDY_enq scemi_tohost_res_fifo.enq
+      scemi_data_resp_res_fifo.RDY_enq scemi_data_resp_res_fifo.enq
     Reset 2 (scemi_dut_dut_dutIfc_myrst.new_rst):
-      scemi_dut_dut_dutIfc_m_dut.RDY_getByteOutput at "../../src/CommTypes.bsv", line 30, column 31,
-      scemi_dut_dut_dutIfc_m_dut.getByteOutput at "../../src/CommTypes.bsv", line 30, column 31,
+      scemi_dut_dut_dutIfc_m_dut.RDY_data_response_get
+      scemi_dut_dut_dutIfc_m_dut.data_response_get
   During elaboration of rule `mkConnectionGetPut' at "GetPut.bs", line 337,
   column 9.
   During elaboration of `connect_get' at "../SceMiXactors.bsv", line 342,
   column 14.
-  During elaboration of `tohost' at "../SceMiLayer.bsv", line 46, column 11.
+  During elaboration of `resp' at "../SceMiXactors.bsv", line 398, column 8.
+  During elaboration of `data' at "../SceMiLayer.bsv", line 69, column 11.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
@@ -372,19 +438,19 @@ Warning: "GetPut.bs", line 337, column 9: (G0043)
   line 20, column 8.
 Warning: "SceMiNoC.bsv", line 316, column 9: (G0043)
   Multiple reset signals influence rule
-  `scemi_fromhost_inport_detect_scemi_reset'.
+  `scemi_start_inport_detect_scemi_reset'.
   This can lead to inconsistent, non-atomic results when not all of these
   signals are asserted.
   Method calls by reset:
     Reset 1 (scemi_rstgen_final_reset.reset_out):
-      scemi_fromhost_inport_in_reset_uclk.read
-    Reset 2 (scemi_fromhost_inport_nocResetUClock.gen_rst):
-      scemi_fromhost_inport_starting_reset.send
+      scemi_start_inport_in_reset_uclk.read
+    Reset 2 (scemi_start_inport_nocResetUClock.gen_rst):
+      scemi_start_inport_starting_reset.send
   During elaboration of rule `detect_scemi_reset' at "SceMiNoC.bsv", line 316,
   column 9.
   During elaboration of `inport' at "../SceMiXactors.bsv", line 251, column
   31.
-  During elaboration of `fromhost' at "../SceMiLayer.bsv", line 47, column 11.
+  During elaboration of `start' at "../SceMiLayer.bsv", line 70, column 11.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
@@ -394,21 +460,21 @@ Warning: "SceMiNoC.bsv", line 316, column 9: (G0043)
   line 20, column 8.
 Warning: "SceMiNoC.bsv", line 321, column 9: (G0043)
   Multiple reset signals influence rule
-  `scemi_fromhost_inport_detect_end_of_scemi_reset'.
+  `scemi_start_inport_detect_end_of_scemi_reset'.
   This can lead to inconsistent, non-atomic results when not all of these
   signals are asserted.
   Method calls by reset:
     Reset 1 (scemi_rstgen_final_reset.reset_out):
-      scemi_fromhost_inport_in_reset_uclk.read
-      scemi_fromhost_inport_prev_reset_uclk.read
-      scemi_fromhost_inport_prev_reset_uclk.write
-    Reset 2 (scemi_fromhost_inport_nocResetUClock.gen_rst):
-      scemi_fromhost_inport_ending_reset.send
+      scemi_start_inport_in_reset_uclk.read
+      scemi_start_inport_prev_reset_uclk.read
+      scemi_start_inport_prev_reset_uclk.write
+    Reset 2 (scemi_start_inport_nocResetUClock.gen_rst):
+      scemi_start_inport_ending_reset.send
   During elaboration of rule `detect_end_of_scemi_reset' at "SceMiNoC.bsv",
   line 321, column 9.
   During elaboration of `inport' at "../SceMiXactors.bsv", line 251, column
   31.
-  During elaboration of `fromhost' at "../SceMiLayer.bsv", line 47, column 11.
+  During elaboration of `start' at "../SceMiLayer.bsv", line 70, column 11.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
@@ -416,21 +482,21 @@ Warning: "SceMiNoC.bsv", line 321, column 9: (G0043)
   During elaboration of `mkBridge' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
   line 20, column 8.
-Warning: "SceMiNoC.bsv", line 316, column 9: (G0043)
+Warning: "SceMiNoC.bsv", line 496, column 9: (G0043)
   Multiple reset signals influence rule
-  `scemi_setmode_inport_detect_scemi_reset'.
+  `scemi_count_outport_detect_scemi_reset'.
   This can lead to inconsistent, non-atomic results when not all of these
   signals are asserted.
   Method calls by reset:
     Reset 1 (scemi_rstgen_final_reset.reset_out):
-      scemi_setmode_inport_in_reset_uclk.read
-    Reset 2 (scemi_setmode_inport_nocResetUClock.gen_rst):
-      scemi_setmode_inport_starting_reset.send
-  During elaboration of rule `detect_scemi_reset' at "SceMiNoC.bsv", line 316,
+      scemi_count_outport_in_reset_uclk.read
+    Reset 2 (scemi_count_outport_nocResetUClock.gen_rst):
+      scemi_count_outport_starting_reset.send
+  During elaboration of rule `detect_scemi_reset' at "SceMiNoC.bsv", line 496,
   column 9.
-  During elaboration of `inport' at "../SceMiXactors.bsv", line 251, column
-  31.
-  During elaboration of `setmode' at "../SceMiLayer.bsv", line 48, column 11.
+  During elaboration of `outport' at "../SceMiXactors.bsv", line 329, column
+  32.
+  During elaboration of `count' at "../SceMiLayer.bsv", line 71, column 11.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
@@ -438,23 +504,46 @@ Warning: "SceMiNoC.bsv", line 316, column 9: (G0043)
   During elaboration of `mkBridge' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
   line 20, column 8.
-Warning: "SceMiNoC.bsv", line 321, column 9: (G0043)
+Warning: "SceMiNoC.bsv", line 501, column 9: (G0043)
   Multiple reset signals influence rule
-  `scemi_setmode_inport_detect_end_of_scemi_reset'.
+  `scemi_count_outport_detect_end_of_scemi_reset'.
   This can lead to inconsistent, non-atomic results when not all of these
   signals are asserted.
   Method calls by reset:
     Reset 1 (scemi_rstgen_final_reset.reset_out):
-      scemi_setmode_inport_in_reset_uclk.read
-      scemi_setmode_inport_prev_reset_uclk.read
-      scemi_setmode_inport_prev_reset_uclk.write
-    Reset 2 (scemi_setmode_inport_nocResetUClock.gen_rst):
-      scemi_setmode_inport_ending_reset.send
+      scemi_count_outport_in_reset_uclk.read
+      scemi_count_outport_prev_reset_uclk.read
+      scemi_count_outport_prev_reset_uclk.write
+    Reset 2 (scemi_count_outport_nocResetUClock.gen_rst):
+      scemi_count_outport_ending_reset.send
   During elaboration of rule `detect_end_of_scemi_reset' at "SceMiNoC.bsv",
-  line 321, column 9.
-  During elaboration of `inport' at "../SceMiXactors.bsv", line 251, column
-  31.
-  During elaboration of `setmode' at "../SceMiLayer.bsv", line 48, column 11.
+  line 501, column 9.
+  During elaboration of `outport' at "../SceMiXactors.bsv", line 329, column
+  32.
+  During elaboration of `count' at "../SceMiLayer.bsv", line 71, column 11.
+  During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
+  During elaboration of `scemi' at
+  "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
+  line 54, column 41.
+  During elaboration of `mkBridge' at
+  "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
+  line 20, column 8.
+Warning: "GetPut.bs", line 337, column 9: (G0043)
+  Multiple reset signals influence rule
+  `scemi_count_connect_get_mkConnectionGetPut'.
+  This can lead to inconsistent, non-atomic results when not all of these
+  signals are asserted.
+  Method calls by reset:
+    Reset 1 (scemi_clk_port_cReset.gen_rst):
+      scemi_count_res_fifo.RDY_enq scemi_count_res_fifo.enq
+    Reset 2 (scemi_dut_dut_dutIfc_myrst.new_rst):
+      scemi_dut_dut_dutIfc_m_dut.RDY_count_get
+      scemi_dut_dut_dutIfc_m_dut.count_get
+  During elaboration of rule `mkConnectionGetPut' at "GetPut.bs", line 337,
+  column 9.
+  During elaboration of `connect_get' at "../SceMiXactors.bsv", line 342,
+  column 14.
+  During elaboration of `count' at "../SceMiLayer.bsv", line 71, column 11.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
@@ -476,7 +565,7 @@ Warning: "SceMiNoC.bsv", line 316, column 9: (G0043)
   column 9.
   During elaboration of `ctrl_in' at "../SceMiXactors.bsv", line 597, column
   34.
-  During elaboration of `shutdown' at "../SceMiLayer.bsv", line 50, column 11.
+  During elaboration of `shutdown' at "../SceMiLayer.bsv", line 73, column 11.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
@@ -500,7 +589,7 @@ Warning: "SceMiNoC.bsv", line 321, column 9: (G0043)
   line 321, column 9.
   During elaboration of `ctrl_in' at "../SceMiXactors.bsv", line 597, column
   34.
-  During elaboration of `shutdown' at "../SceMiLayer.bsv", line 50, column 11.
+  During elaboration of `shutdown' at "../SceMiLayer.bsv", line 73, column 11.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
@@ -522,7 +611,7 @@ Warning: "SceMiNoC.bsv", line 496, column 9: (G0043)
   column 9.
   During elaboration of `ctrl_out' at "../SceMiXactors.bsv", line 598, column
   34.
-  During elaboration of `shutdown' at "../SceMiLayer.bsv", line 50, column 11.
+  During elaboration of `shutdown' at "../SceMiLayer.bsv", line 73, column 11.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
@@ -546,7 +635,7 @@ Warning: "SceMiNoC.bsv", line 501, column 9: (G0043)
   line 501, column 9.
   During elaboration of `ctrl_out' at "../SceMiXactors.bsv", line 598, column
   34.
-  During elaboration of `shutdown' at "../SceMiLayer.bsv", line 50, column 11.
+  During elaboration of `shutdown' at "../SceMiLayer.bsv", line 73, column 11.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
@@ -554,7 +643,7 @@ Warning: "SceMiNoC.bsv", line 501, column 9: (G0043)
   During elaboration of `mkBridge' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
   line 20, column 8.
-Warning: "../../src/includes/DDR3OutstandingLimit.bsv", line 18, column 8: (G0043)
+Warning: "../../includes/DDR3OutstandingLimit.bsv", line 18, column 8: (G0043)
   Multiple reset signals influence rule
   `scemi_Prelude_inst_changeSpecialWires_request'.
   This can lead to inconsistent, non-atomic results when not all of these
@@ -569,8 +658,8 @@ Warning: "../../src/includes/DDR3OutstandingLimit.bsv", line 18, column 8: (G004
       scemi_dut_dut_dutIfc_m_dut.RDY_ddr3client_request_get
       scemi_dut_dut_dutIfc_m_dut.ddr3client_request_get
   During elaboration of rule `request' at
-  "../../src/includes/DDR3OutstandingLimit.bsv", line 18, column 8.
-  During elaboration of `changeSpecialWires' at "../SceMiLayer.bsv", line 57,
+  "../../includes/DDR3OutstandingLimit.bsv", line 18, column 8.
+  During elaboration of `changeSpecialWires' at "../SceMiLayer.bsv", line 80,
   column 5.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
@@ -579,7 +668,7 @@ Warning: "../../src/includes/DDR3OutstandingLimit.bsv", line 18, column 8: (G004
   During elaboration of `mkBridge' at
   "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv",
   line 20, column 8.
-Warning: "../../src/includes/DDR3OutstandingLimit.bsv", line 31, column 8: (G0043)
+Warning: "../../includes/DDR3OutstandingLimit.bsv", line 31, column 8: (G0043)
   Multiple reset signals influence rule
   `scemi_Prelude_inst_changeSpecialWires_forward'.
   This can lead to inconsistent, non-atomic results when not all of these
@@ -594,8 +683,8 @@ Warning: "../../src/includes/DDR3OutstandingLimit.bsv", line 31, column 8: (G004
       scemi_dut_dut_dutIfc_m_dut.RDY_ddr3client_response_put
       scemi_dut_dut_dutIfc_m_dut.ddr3client_response_put
   During elaboration of rule `forward' at
-  "../../src/includes/DDR3OutstandingLimit.bsv", line 31, column 8.
-  During elaboration of `changeSpecialWires' at "../SceMiLayer.bsv", line 57,
+  "../../includes/DDR3OutstandingLimit.bsv", line 31, column 8.
+  During elaboration of `changeSpecialWires' at "../SceMiLayer.bsv", line 80,
   column 5.
   During elaboration of `_dut' at "SceMiVirtex7PCIE.bsv", line 213, column 20.
   During elaboration of `scemi' at
@@ -738,13 +827,24 @@ Warning: "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bri
 	scemi_init_state_msgFIFO.enq vs. scemi_init_state_msgFIFO.enq
 	scemi_init_state_msgFIFO.enq vs. scemi_init_state_msgFIFO.notFull
 Warning: "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv", line 20, column 8: (G0010)
-  Rule "scemi_tohost_connect_res_mkConnectionGetPut" was treated as more
+  Rule "scemi_data_resp_connect_res_mkConnectionGetPut" was treated as more
   urgent than "scemi_shutdown_ack". Conflicts:
-    "scemi_tohost_connect_res_mkConnectionGetPut" cannot fire before "scemi_shutdown_ack":
+    "scemi_data_resp_connect_res_mkConnectionGetPut" cannot fire before "scemi_shutdown_ack":
       calls to
 	scemi_init_state_msgFIFO.enq vs. scemi_init_state_msgFIFO.enq
 	scemi_init_state_msgFIFO.enq vs. scemi_init_state_msgFIFO.notFull
-    "scemi_shutdown_ack" cannot fire before "scemi_tohost_connect_res_mkConnectionGetPut":
+    "scemi_shutdown_ack" cannot fire before "scemi_data_resp_connect_res_mkConnectionGetPut":
+      calls to
+	scemi_init_state_msgFIFO.enq vs. scemi_init_state_msgFIFO.enq
+	scemi_init_state_msgFIFO.enq vs. scemi_init_state_msgFIFO.notFull
+Warning: "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv", line 20, column 8: (G0010)
+  Rule "scemi_count_connect_res_mkConnectionGetPut" was treated as more urgent
+  than "scemi_shutdown_ack". Conflicts:
+    "scemi_count_connect_res_mkConnectionGetPut" cannot fire before "scemi_shutdown_ack":
+      calls to
+	scemi_init_state_msgFIFO.enq vs. scemi_init_state_msgFIFO.enq
+	scemi_init_state_msgFIFO.enq vs. scemi_init_state_msgFIFO.notFull
+    "scemi_shutdown_ack" cannot fire before "scemi_count_connect_res_mkConnectionGetPut":
       calls to
 	scemi_init_state_msgFIFO.enq vs. scemi_init_state_msgFIFO.enq
 	scemi_init_state_msgFIFO.enq vs. scemi_init_state_msgFIFO.notFull
@@ -815,10 +915,16 @@ Warning: "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bri
     scemi_shutdown_ctrl_out_ok.write
   To silence this warning, use the `-no-warn-action-shadowing' flag.
 Warning: "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv", line 20, column 8: (G0117)
-  Rule `scemi_tohost_outport_setOK' shadows the effects of
-  `scemi_tohost_connect_res_mkConnectionGetPut' when they execute in the same
+  Rule `scemi_count_outport_setOK' shadows the effects of
+  `scemi_count_connect_res_mkConnectionGetPut' when they execute in the same
   clock cycle. Affected method calls:
-    scemi_tohost_outport_ok.write
+    scemi_count_outport_ok.write
+  To silence this warning, use the `-no-warn-action-shadowing' flag.
+Warning: "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv", line 20, column 8: (G0117)
+  Rule `scemi_data_resp_outport_setOK' shadows the effects of
+  `scemi_data_resp_connect_res_mkConnectionGetPut' when they execute in the
+  same clock cycle. Affected method calls:
+    scemi_data_resp_outport_ok.write
   To silence this warning, use the `-no-warn-action-shadowing' flag.
 Warning: "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bridge_VIRTEX7_VC707_DDR3.bsv", line 20, column 8: (G0117)
   Rule `scemi_dut_softrst_resp_outport_setOK' shadows the effects of
@@ -838,6 +944,7 @@ Warning: "/opt/bluespec/Bluespec-2014.07.A/lib/board_support/bluenoc/bridges/Bri
   clock cycle. Affected method calls:
     scemi_dut_dut_dutIfc_resetting.write
   To silence this warning, use the `-no-warn-action-shadowing' flag.
+Schedule dump file created: info_dut/mkBridge.sched
 Verilog file created: vlog_dut/mkBridge.v
 Elaborated Verilog module file created: bdir_dut/mkBridge.ba
 All packages are up to date.

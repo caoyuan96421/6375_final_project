@@ -1,14 +1,14 @@
 [DEFAULT]
 default-targets:     vc707_dut tb
-bsc-compile-options: -aggressive-conditions -keep-fires
-bsc-link-options:    -keep-fires
+bsc-compile-options: -aggressive-conditions -keep-fires -show-schedule +RTS -K1G -RTS
+bsc-link-options:    -keep-fires +RTS -K1G -RTS
 bsv-define:          DDR3
 
 [common]
 hide-target
 top-module:            mkBridge
 top-file:              ../Bridge.bsv
-bsv-source-directories:  .. ../../src ../../src/includes ../../src/serialize ../../src/deserialize
+bsv-source-directories:  .. ../.. ../../dwt ../../includes ../../huffman ../../serialize ../../deserialize
 verilog-directory:     vlog_dut
 binary-directory:      bdir_dut
 simulation-directory:  simdir_dut
@@ -25,10 +25,10 @@ extends-target: common
 extends-target: dut
 build-for:      vc707
 scemi-type:     PCIE_VIRTEX7
-bsv-define:     PROC_FILE=WithCache
 sodimm-style:   DDR3
 xilinx-use-planahead
 xilinx-map-options: -detail
+xilinx-patcl-supplement-file: report_detailed.tcl
 
 [tb]
 extends-target: common
