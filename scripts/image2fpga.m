@@ -1,9 +1,12 @@
-ImageFile = 'saturn_256.jpg';
+ImageFile = 'saturn.png';
 t =imread(ImageFile);
-X = double(imread(ImageFile));
-N = size(X);
-X = padarray(X,[256-N(1),256-N(2),0],'post');
+X = double(rgb2gray(imread(ImageFile)));
+ns = [256, 256];
+[I,J]=meshgrid(linspace(1,size(X,2),ns(1)),linspace(1,size(X,1),ns(2)));
+X = interp2(X, I, J);%crop;padarray(X,[256-N(1),256-N(2),0],'post');
+imshow(uint8(X));
 
+X = X - 128;
 %X = rgb2ycbcr(X); 
 %X = X(:,:,1);
 %X = randi([-4,3],8,8);

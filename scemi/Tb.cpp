@@ -26,20 +26,16 @@ void out_cb(void* x, const BitT<4>& res)
     //std::cout << "Data Out:" << std::hex << static_cast<int>(a) << std::endl;
     fputc(a, outpcm);
     gotcount++;
-    std::cout << "Got Count:" << gotcount << "Put Count:" << putcount << std::endl;
-    /*if ((gotcount == putcount) && outpcm) {
-      std::cout << "out done!" << std::endl;
-      fclose(outpcm);
-      outpcm = NULL;
-      std::cout <<"Waiting for Mode (0 for toFPGA, 1 for fromFPGA, q to Quit):" << std::endl;
-      return;
-    }
-  } else if (indone && outpcm) {
-    fclose(outpcm);
-    outpcm = NULL;
-    done = true;
-  }
-    */
+    std::cout << "Got Count:" << gotcount << std::endl;
+}
+
+void count_cb(void* x, const BitT<64>& res){
+    unsigned long long count = res;
+    FILE *fp = fopen("cycle.txt", "w");
+    fprintf(fp, "%lld\n",count);
+    fclose(fp);
+    
+    std::cout << "Cycle count: " << count << std::endl;
 }
 
 void toFPGA(InportProxyT<BitT<4> >& fromhost)
@@ -75,10 +71,16 @@ int main(int argc, char* argv[])
     SceMi *sceMi = SceMi::Init(sceMiVersion, &params);
     std::cout << "starting up..." << std::endl;
     // Initialize the SceMi ports
-    OutportProxyT<BitT<4> > tohost("", "scemi_tohost_outport", sceMi);
-    tohost.setCallBack(out_cb, NULL);
-    InportProxyT<BitT<4> > fromhost("", "scemi_fromhost_inport", sceMi);
-    InportProxyT<Bool> setmode ("", "scemi_setmode_inport",sceMi);
+    InportProxyT<BitT<4> > inport("", "scemi_data_req_inport", sceMi);
+    
+    OutportProxyT<BitT<4> > outport("", "scemi_data_resp_outport", sceMi);
+    outport.setCallBack(out_cb, NULL);
+    
+    InportProxyT<Bool> start ("", "scemi_start_inport",sceMi);
+    
+    OutportProxyT<BitT<64> > count("", "scemi_count_outport", sceMi);
+    count.setCallBack(count_cb, NULL);
+    
     ResetXactor reset("", "scemi", sceMi);
     ShutdownXactor shutdown("", "scemi_shutdown", sceMi);
 
@@ -97,17 +99,16 @@ int main(int argc, char* argv[])
     //false is toFPGA, true is fromFPGA
 
     while (!done) {
-      std::cout <<"Enter Mode (0 for toFPGA, 1 for fromFPGA, q to Quit):" << std::endl;
+      std::cout <<"Enter Mode (p for toFPGA, s for start, g for fromFPGA, q to Quit):" << std::endl;
       std::cin >> user_input;
       if (user_input == "q") {
 	done = true;
-      } else if (user_input == "0"){
-	bool mode = false;
-	setmode.sendMessage(mode);
-	toFPGA(fromhost);
-      } else if (user_input == "1"){
-	bool mode = true;
-	setmode.sendMessage(mode);
+      } else if (user_input == "p"){
+	toFPGA(inport);
+      } else if (user_input == "s"){
+	start.sendMessage((BitT<1>)0);
+      } else if (user_input == "g"){
+      	//
       } else {
 	std::cout << "Invalid Input!" << std::endl;
       }    

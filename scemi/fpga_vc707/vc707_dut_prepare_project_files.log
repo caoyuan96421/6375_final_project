@@ -1,19 +1,19 @@
 Warning: Command line: (S0073)
   Duplicate directories were found in the path specified with the -p flag.
   Only the first occurrence will be used. The duplicates are:
-    /afs/athena.mit.edu/user/a/j/ajeisens/ajeisens/final-project/scemi/fpga_vc707/bdir_dut
+    /mnt/nfs/var/nfs/caoyuan/6375_final_project/scemi/fpga_vc707/bdir_dut
   Note that when the -bdir flag is used, that directory is automatically added
   to the head of the path.
 Warning: Command line: (S0073)
   Duplicate directories were found in the path specified with the -p flag.
   Only the first occurrence will be used. The duplicates are:
-    /afs/athena.mit.edu/user/a/j/ajeisens/ajeisens/final-project/scemi/fpga_vc707/bdir_dut
+    /mnt/nfs/var/nfs/caoyuan/6375_final_project/scemi/fpga_vc707/bdir_dut
   Note that when the -bdir flag is used, that directory is automatically added
   to the head of the path.
 Warning: Command line: (S0073)
   Duplicate directories were found in the path specified with the -p flag.
   Only the first occurrence will be used. The duplicates are:
-    /afs/athena.mit.edu/user/a/j/ajeisens/ajeisens/final-project/scemi/fpga_vc707/bdir_dut
+    /mnt/nfs/var/nfs/caoyuan/6375_final_project/scemi/fpga_vc707/bdir_dut
   Note that when the -bdir flag is used, that directory is automatically added
   to the head of the path.
 *****
@@ -22,29 +22,21 @@ Subcommand: /opt/bluespec/Bluespec-2014.07.A/lib/tcllib/bluespec/listVlogFiles.t
 Writing xilinx/mkBridge.files.
 Examining /opt/bluespec/Bluespec-2014.07.A/lib/Libraries/mkPCIEtoBNoCSceMi_4.v (mkPCIEtoBNoCSceMi_4/virtex7)
 
-Examining /afs/athena.mit.edu/user/a/j/ajeisens/ajeisens/final-project/scemi/fpga_vc707/vlog_dut/mkCommPipeline.v (mkCommPipeline/virtex7)
-
 Examining /opt/bluespec/Bluespec-2014.07.A/lib/Libraries/mkTLPArbiter.v (mkTLPArbiter/virtex7)
 
 Examining /opt/bluespec/Bluespec-2014.07.A/lib/Libraries/mkSceMiLinkTypeParameter.v (mkSceMiLinkTypeParameter/virtex7)
-
-Examining /afs/athena.mit.edu/user/a/j/ajeisens/ajeisens/final-project/scemi/fpga_vc707/vlog_dut/mkDeserializerPTB.v (mkDeserializerPTB/virtex7)
-
-Examining /afs/athena.mit.edu/user/a/j/ajeisens/ajeisens/final-project/scemi/fpga_vc707/vlog_dut/mkSerializerPTW.v (mkSerializerPTW/virtex7)
-
-Examining /afs/athena.mit.edu/user/a/j/ajeisens/ajeisens/final-project/scemi/fpga_vc707/vlog_dut/mkDeserializerWTP.v (mkDeserializerWTP/virtex7)
 
 Examining /opt/bluespec/Bluespec-2014.07.A/lib/Libraries/mkSceMiUInt32Parameter.v (mkSceMiUInt32Parameter/virtex7)
 
 Examining /opt/bluespec/Bluespec-2014.07.A/lib/Libraries/mkSceMiUInt64Parameter.v (mkSceMiUInt64Parameter/virtex7)
 
-Examining /afs/athena.mit.edu/user/a/j/ajeisens/ajeisens/final-project/scemi/fpga_vc707/vlog_dut/mkBridge.v (mkBridge/virtex7)
+Examining /mnt/nfs/var/nfs/caoyuan/6375_final_project/scemi/fpga_vc707/vlog_dut/mkBridge.v (mkBridge/virtex7)
 
-Examining /afs/athena.mit.edu/user/a/j/ajeisens/ajeisens/final-project/scemi/fpga_vc707/vlog_dut/mkSerializerBTP.v (mkSerializerBTP/virtex7)
-
-Examining /afs/athena.mit.edu/user/a/j/ajeisens/ajeisens/final-project/scemi/fpga_vc707/vlog_dut/mkDutWrapper.v (mkDutWrapper/virtex7)
+Examining /mnt/nfs/var/nfs/caoyuan/6375_final_project/scemi/fpga_vc707/vlog_dut/mkDutWrapper.v (mkDutWrapper/virtex7)
 
 Examining /opt/bluespec/Bluespec-2014.07.A/lib/Libraries/mkTLPDispatcher.v (mkTLPDispatcher/virtex7)
+
+Examining /mnt/nfs/var/nfs/caoyuan/6375_final_project/scemi/fpga_vc707/vlog_dut/mkFullPipeline.v (mkFullPipeline/virtex7)
 
 Examining /opt/bluespec/Bluespec-2014.07.A/lib/Verilog/ProbeHook.v (ProbeHook/virtex7)
 
