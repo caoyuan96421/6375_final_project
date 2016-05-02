@@ -8,17 +8,19 @@ fprintf('Decoder input %d bits\n', lenBits);
 i = 1;
 j = 1;
 while ( i < lenBits)
-    if (i+1 == lenBits || i+2 == lenBits || i+3 == lenBits)
-        i = lenBits;
-    elseif (bits(i:i+1) == [1 0])
+    if (bits(i:i+1) == [1 0])
         coeffs(j) = 0;
         i = i + 2;
+    elseif (i+1 == lenBits(2) || i+2 == lenBits(2))
+        i = lenBits(2);
     elseif (bits(i:i+3) == [1 1 0 0])
         coeffs(j) = 1;
         i = i + 4;
     elseif (bits(i:i+3) == [1 1 0 1])
         coeffs(j) = -1;
         i = i + 4;
+    elseif (i+3 == lenBits(2))
+        i = lenBits(2);
     elseif (bits(i:i+4) == [1 1 1 0 0])
         coeffs(j) = 2;
         i = i + 5;
@@ -35,12 +37,12 @@ while ( i < lenBits)
         coeffs(j) = -4;
         i = i + 6;
     elseif (bits(i:i+5) == [1 1 1 1 1 1])
-        test = bi2de(int16(bits(i+6:i+17)), 'left-msb');
+        test = int16(bin2dec(num2str(bits(i+6:i+17))));
         if (test > 2^11)
             test = test - 2^12;
         end
         %new_coeff = typecast(uint16(bin2dec(num2str(bits(i+6:i+17)))),'int16')
-        coeffs(j) = test;
+        coeffs = [coeffs, test];
         i = i + 18;
     else
         error = ['Error! at i =' int2str(i)]
@@ -49,9 +51,7 @@ while ( i < lenBits)
         c3 = mat2str(bits(i:i+4))
         c4 = mat2str(bits(i:i+5))
         cN = typecast(uint16(bin2dec(fliplr(num2str(bits(i+6:i+21))))),'int16')
-        i = lenBits;
+        i = lenBits(2);
     end
-    
-    j = j+1;
 end
 end
