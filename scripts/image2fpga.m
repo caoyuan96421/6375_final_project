@@ -33,9 +33,9 @@ for i=1:L
     Y_B=scramble(Y_B, i-1);
 end
 T = [reshape(Y_R', 1, []), reshape(Y_G', 1, []), reshape(Y_B', 1, [])];
-T = int16(T / 16);
+T = int16(T / 8);
 size(T)
-[bytes,b0] = huffman_encode(T,8);
+[bytes,b0] = huffman_encode(T,9);
 size(bytes)
 f = fopen('in.pcm','wb');
 fwrite(f,bytes');

@@ -26,7 +26,7 @@ typedef 512 M;
 typedef 2 B;
 typedef 1 T;
 typedef 3 L;
-typedef 4 Q;
+typedef 3 Q;
 
 (* synthesize *)
 module mkFullPipeline(CommIfc ifc);

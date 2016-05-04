@@ -34,16 +34,22 @@ Warning: "Prelude.bs", line 953, column 9: (G0024)
   31.
   During elaboration of `mkFullPipeline' at "../../FullPipeline.bsv", line 32,
   column 8.
-Warning: "RevertingVirtualReg.bs", line 35, column 19: (G0024)
+Warning: "Prelude.bs", line 578, column 27: (G0024)
   The function unfolding steps interval has been exceeded when unfolding
-  `fromPrimAction'. The current number of steps is 200000. Next warning at
-  300000 steps. Elaboration terminates at 1000000 steps.
-  During elaboration of the body of rule `stage_pad' at
-  "../../huffman/Encoder_v2.bsv", line 91, column 9.
+  `Prelude.PrimIndex~Prelude.Integer~32'. The current number of steps is
+  200000. Next warning at 300000 steps. Elaboration terminates at 1000000
+  steps.
+  During elaboration of the body of rule `stage_chunk' at
+  "../../huffman/Encoder_v2.bsv", line 58, column 14.
   During elaboration of `encoder' at "../../FullPipeline.bsv", line 45, column
   48.
   During elaboration of `mkFullPipeline' at "../../FullPipeline.bsv", line 32,
   column 8.
+Warning: "../../FullPipeline.bsv", line 32, column 8: (G0020)
+  System functions (e.g., $display) called by interface methods execute in an
+  unpredictable order during Verilog simulations.
+      Top-level interface method `start_put' calls a system function (e.g.,
+      $display) at "../../FullPipeline.bsv", line 193, column 25
 Warning: "../../FullPipeline.bsv", line 32, column 8: (G0117)
   Rule `start_put' shadows the effects of `idwt_to_ddr3' when they execute in
   the same clock cycle. Affected method calls:
