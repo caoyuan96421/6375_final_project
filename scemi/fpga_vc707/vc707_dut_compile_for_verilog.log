@@ -20,32 +20,31 @@ compiling ../../huffman/Encoder_v2.bsv
 compiling ../../huffman/Decoder_v2.bsv
 compiling ../../FullPipeline.bsv
 code generation for mkFullPipeline starts
-Warning: "Prelude.bs", line 2986, column 0: (G0024)
+Warning: "Prelude.bs", line 953, column 9: (G0024)
   The function unfolding steps interval has been exceeded when unfolding
-  `bind_'. The current number of steps is 100000. Next warning at 200000
-  steps. Elaboration terminates at 1000000 steps.
-  During elaboration of `line_re' at "../../dwt/DWT2D.bsv", line 433, column
+  `Prelude.Literal~Prelude.Bit~n'. The current number of steps is 100000. Next
+  warning at 200000 steps. Elaboration terminates at 1000000 steps.
+  During elaboration of `sample_3' at "../../dwt/DWT2D.bsv", line 429, column
   26.
   During elaboration of `m' at "../../dwt/DWT2D.bsv", line 726, column 23.
   During elaboration of `idwt' at "../../dwt/DWT2DML.bsv", line 200, column
   65.
-  During elaboration of `m' at "../../dwt/DWT2DML.bsv", line 252, column 30.
-  During elaboration of `idwt2d' at "../../FullPipeline.bsv", line 43, column
-  29.
-  During elaboration of `mkFullPipeline' at "../../FullPipeline.bsv", line 31,
+  During elaboration of `m' at "../../dwt/DWT2DML.bsv", line 256, column 30.
+  During elaboration of `idwt2d' at "../../FullPipeline.bsv", line 44, column
+  31.
+  During elaboration of `mkFullPipeline' at "../../FullPipeline.bsv", line 32,
   column 8.
-Warning: "Prelude.bs", line 578, column 27: (G0024)
+Warning: "RevertingVirtualReg.bs", line 35, column 19: (G0024)
   The function unfolding steps interval has been exceeded when unfolding
-  `Prelude.PrimIndex~Prelude.Integer~32'. The current number of steps is
-  200000. Next warning at 300000 steps. Elaboration terminates at 1000000
-  steps.
-  During elaboration of the body of rule `stage_chunk' at
-  "../../huffman/Encoder_v2.bsv", line 58, column 14.
-  During elaboration of `encoder' at "../../FullPipeline.bsv", line 44, column
-  25.
-  During elaboration of `mkFullPipeline' at "../../FullPipeline.bsv", line 31,
+  `fromPrimAction'. The current number of steps is 200000. Next warning at
+  300000 steps. Elaboration terminates at 1000000 steps.
+  During elaboration of the body of rule `stage_pad' at
+  "../../huffman/Encoder_v2.bsv", line 91, column 9.
+  During elaboration of `encoder' at "../../FullPipeline.bsv", line 45, column
+  48.
+  During elaboration of `mkFullPipeline' at "../../FullPipeline.bsv", line 32,
   column 8.
-Warning: "../../FullPipeline.bsv", line 31, column 8: (G0117)
+Warning: "../../FullPipeline.bsv", line 32, column 8: (G0117)
   Rule `start_put' shadows the effects of `idwt_to_ddr3' when they execute in
   the same clock cycle. Affected method calls:
     mode.write

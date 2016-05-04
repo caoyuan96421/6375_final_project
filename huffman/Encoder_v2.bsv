@@ -10,21 +10,21 @@ import Ehr::*;
 typedef Server#(
 	Bit#(c), // Coefficient input
 	Bit#(b)  // Byte output
-) Encoder#(numeric type n_dwt, numeric type m_dwt, numeric type c, numeric type b);
+) Encoder#(numeric type ns, numeric type c, numeric type b);
 
 typedef struct {
 	Bit#(6) size;
-	Bit#(n) token;
-} Encoding#(numeric type n) deriving (Eq, Bits);
+	Bit#(t) token;
+} Encoding#(numeric type t) deriving (Eq, Bits);
 
 // s: Huffman Table length
 // c: Input bit length
 // n: Huffman encoding token length (excluding raw encoding)
 // b: Output bit length
-module mkEncoder(HuffmanTable#(s,c,n) ht, Encoder#(n_dwt, m_dwt, c, b) ifc);
+module mkEncoder(HuffmanTable#(s,c,n) ht, Encoder#(ns, c, b) ifc);
 	// Max length of each token
 	Integer maxTokenLen = valueOf(n) + valueOf(c);
-	Integer numSamples = valueOf(n_dwt) * valueOf(m_dwt);
+	Integer numSamples = valueOf(ns);
 	FIFO#(Bit#(c)) inputFIFO <- mkFIFO;
 	FIFO#(Bit#(b)) outputFIFO <- mkFIFO; 
 	
@@ -53,20 +53,31 @@ module mkEncoder(HuffmanTable#(s,c,n) ht, Encoder#(n_dwt, m_dwt, c, b) ifc);
 		end
 		$display("%t Encoder: encode %d -> %bb'%d", $time, in, encode.token, encode.size);
 	   encodingFIFO.enq(encode);
-	   samples <= samples + 1;
-	   $display("samples:",samples);
 	endrule
 
 	rule stage_chunk (!isValid(bitBuffer[w_index + encodingFIFO.first.size - 1][1])); // Make sure there is enough room for write
 		Encoding#(TAdd#(n, c)) encode = encodingFIFO.first; encodingFIFO.deq;
-		for (Integer i = 0; i < maxTokenLen; i=i+1) begin
-			if (fromInteger(i) < encode.size) begin
-				bitBuffer[w_index + fromInteger(i)][1] <= tagged Valid encode.token[i];
+		Bit#(TAdd#(TAdd#(n, c),4)) tok = extend(encode.token);
+		Bit#(6) size = encode.size;
+		if(samples == fromInteger(numSamples-1))begin
+			// Check alignment
+			if((w_index + size) % fromInteger(valueOf(b)) != 0)begin
+				// Pad
+				size = size + fromInteger(valueOf(b)) - (w_index + size) % fromInteger(valueOf(b));
+				$display("%t Encoder: Pad %d zeros bits at the end of a frame", $time, fromInteger(valueOf(b)) - (w_index + size) % fromInteger(valueOf(b)));
+			end
+			samples <= 0;
+		end
+		else
+			samples <= samples + 1;
+		for (Integer i = 0; i < maxTokenLen + 4; i=i+1) begin
+			if (fromInteger(i) < size) begin
+				bitBuffer[w_index + fromInteger(i)][1] <= tagged Valid tok[i];
 			end
 		end
 		// Automatically warp
-		w_index <= w_index + encode.size;
-		$display("%t Encoder: chunk %b, w_ptr=%d", $time, encode.token, w_index);
+		w_index <= w_index + size;
+		$display("%t Encoder: chunk sample=%d size=%d tok=%b, w_ptr=%d", $time, samples, size, tok, w_index + size);
 	endrule
 
 	rule stage_read (isValid(bitBuffer[r_index + fromInteger(valueOf(b)) - 1][0])); // Make sure there is enough data to read
@@ -79,29 +90,33 @@ module mkEncoder(HuffmanTable#(s,c,n) ht, Encoder#(n_dwt, m_dwt, c, b) ifc);
 		// Automatically warp
 		r_index <= r_index + fromInteger(valueOf(b));
 		
-	   $display("%t Encoder: output %b",$time, out);
-	   $display("samples:",samples);
-	   //for (Integer j = 0; j < 64; j=j+1) begin
-	      //$display("bit buffer[%d]:",j, fshow(bitBuffer[j][0]));
-	   //end
-	   //$display("w index:%d r index:%d",w_index,r_index);
+		$display("%t Encoder: output %b",$time, out);
 		outputFIFO.enq(out);
 	endrule
 
-   rule stage_pad((samples == fromInteger(numSamples)) && !isValid(bitBuffer[r_index + fromInteger(valueOf(b)) - 1][0]) && isValid(bitBuffer[r_index][0]));
-      $display("in pad, r index:",r_index);
-      Bit#(b) out = ?;
-      for (Integer i = 0; i < valueOf(b); i=i+1) begin
-	 out[i] = fromMaybe(0, bitBuffer[r_index + fromInteger(i)][0]);
-	 bitBuffer[r_index + fromInteger(i)][0] <= tagged Invalid;
-      end
-		
-      // Automatically warp
-      r_index <= r_index + fromInteger(valueOf(b));
-		
-      $display("%t Encoder: output %b",$time, out);
-      outputFIFO.enq(out);
-   endrule
+	/*rule stage_pad(samples == fromInteger(numSamples));
+		if(!isValid(bitBuffer[r_index + fromInteger(valueOf(b)) - 1][0]) && isValid(bitBuffer[r_index][0])) begin
+			// Some data left
+			
+			Bit#(b) out = ?;
+			Bit#(6) new_r_index = ?;
+			for (Integer i = valueOf(b) - 1; i >= 0; i=i-1) begin
+				out[i] = fromMaybe(0, bitBuffer[r_index + fromInteger(i)][0]);
+				if(!isValid(bitBuffer[r_index + fromInteger(i)][0]))begin
+					new_r_index = r_index + fromInteger(i);
+				end
+				else
+					bitBuffer[r_index + fromInteger(i)][0] <= tagged Invalid;
+			end
+
+			// Automatically warp
+			r_index <= new_r_index;
+			$display("%t Encoder: pad %d bits:",new_r_index - r_index);
+			$display("%t Encoder: output %b",$time, out);
+			outputFIFO.enq(out);
+		end
+		samples <= 0;
+	endrule*/
   
 	interface Put request = toPut(inputFIFO);
 	interface Get response = toGet(outputFIFO);

@@ -27,7 +27,7 @@ typedef 18 WF;
 typedef FixedPoint#(WI,WF) WSample;
 typedef FixedPoint#(2,WF) DWTCoef;
 
-typedef 12 WC;
+typedef 8 WC;
 typedef Int#(WC) Coeff;
 
 interface CommIfc;

@@ -19,13 +19,14 @@ import HuffmanTable::*;
 import CommTypes::*;
 import Ehr::*;
 
-typedef 256 N;
-typedef 256 M;
-//typedef 8 N;
-//typedef 8 M;
+typedef 512 N;
+typedef 512 M;
+//typedef 16 N;
+//typedef 16 M;
 typedef 2 B;
 typedef 1 T;
 typedef 3 L;
+typedef 4 Q;
 
 (* synthesize *)
 module mkFullPipeline(CommIfc ifc);
@@ -39,9 +40,9 @@ module mkFullPipeline(CommIfc ifc);
 	Reg#(Bit#(24)) inAddr <-mkReg(0);
 	Reg#(Bit#(24)) outAddr <- mkReg(0);
 
-	DWT2DMLI#(N,M,B,L) dwt2d <- mkDWT2DMLI();
-	IDWT2DMLI#(N,M,B,L) idwt2d <- mkIDWT2DMLI();
-	Encoder#(WC, 4) encoder <- mkEncoder(huffmanTable1);
+	DWT2DMLI#(N,M,B,L,Q) dwt2d <- mkDWT2DMLI();
+	IDWT2DMLI#(N,M,B,L,Q) idwt2d <- mkIDWT2DMLI();
+	Encoder#(TMul#(TMul#(N, M), 3), WC, 4) encoder <- mkEncoder(huffmanTable1);
 	Decoder#(4, WC) decoder <- mkDecoder(huffmanTable1);
 	FIFO#(Vector#(B, Coeff)) efifo <- mkFIFO;
 	Vector#(B, Reg#(Coeff)) dbuf <- replicateM(mkRegU);
@@ -106,7 +107,7 @@ module mkFullPipeline(CommIfc ifc);
 
 	rule idwt_to_ddr3(started && !mode);
 		let x <- idwt2d.response.get();
-		$display("[%t]got idwt response [%d]:",$time,fshow(x), pcount);
+		$display("[%t]got idwt response [%d]:",$time,pcount, fshow(x));
 		
 		let indata = readVReg(dpacket);
 		indata[pcount] = pack(x);
@@ -116,7 +117,7 @@ module mkFullPipeline(CommIfc ifc);
 			ddr3ReqFifo.enq(DDR3_Req{write: True, byteen: '1, address: inAddr, data: pack(indata)});
 			inAddr <= inAddr + 1;
 			maxInAddr <= inAddr;
-			$display("[%t]Word Input: %x, addr new: %x,from idwt2:",$time,pack(indata),inAddr,x);
+			$display("[%t]Word Input: %x, addr: %x, count=%d",$time,pack(indata),inAddr,count_decompress[0]);
 			
 			pcount <= 0;
 		end
@@ -126,10 +127,11 @@ module mkFullPipeline(CommIfc ifc);
 		
 		
 		Bit#(32) newcount = count_decompress[0] + fromInteger(valueOf(B));
-		if(newcount == fromInteger(valueOf(N)*valueOf(M)))begin
+		if(newcount == fromInteger(valueOf(N)*valueOf(M)*3))begin
 			// Decompression finished! Switch mode
 			$display("[%t]Switch mode. Cycle=%d", $time, cyc[0]);
 			mode <= True;
+			newcount = 0;
 			ocfifo.enq(cyc[0]);
 		end
 		count_decompress[0] <= newcount;
@@ -188,6 +190,7 @@ module mkFullPipeline(CommIfc ifc);
 
 	interface Put start;
 		method Action put (Bit#(1) x);
+			$display("[%t] Start signal received", $time);
 			started <= True;
 			cyc[1] <= 0;
 			count_decompress[1] <= 0;

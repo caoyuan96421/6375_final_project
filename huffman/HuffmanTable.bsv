@@ -1,4 +1,5 @@
 import Vector::*;
+import CommTypes::*;
 
 typedef struct {
 	Bit#(6) size;
@@ -9,7 +10,7 @@ typedef struct {
 // s: table length, m: tag length, n: max token length
 typedef Vector#(s, HuffmanTableItem#(m, n)) HuffmanTable#(numeric type s, numeric type m, numeric type n);
 
-HuffmanTable#(8, 12, 6) huffmanTable1 = cons(
+HuffmanTable#(8, WC, 6) huffmanTable1 = cons(
 HuffmanTableItem{size:2, tag: 0, token: 6'b100000}, cons(
 HuffmanTableItem{size:4, tag: 1, token: 6'b110000}, cons(
 HuffmanTableItem{size:4, tag:-1, token: 6'b110100}, cons(

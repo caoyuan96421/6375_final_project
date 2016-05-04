@@ -19,12 +19,12 @@ typedef DWT#(p) DWT2DML#(numeric type n, numeric type m, numeric type p, numeric
 typedef Server#(
 	Vector#(p, Sample),
 	Vector#(p, Coeff)
-) DWT2DMLI#(numeric type n, numeric type m, numeric type p, numeric type l);
+) DWT2DMLI#(numeric type n, numeric type m, numeric type p, numeric type l, numeric type q);
 
 typedef Server#(
 	Vector#(p, Coeff),
 	Vector#(p, Sample)
-) IDWT2DMLI#(numeric type n, numeric type m, numeric type p, numeric type l);
+) IDWT2DMLI#(numeric type n, numeric type m, numeric type p, numeric type l, numeric type q);
 
 // Quantized Sample
 typedef Coeff QSample;
@@ -209,7 +209,7 @@ module mkIDWT2DML(DWT2DML#(n, m, p, l))
 	return m;
 endmodule
 
-module mkDWT2DMLI(DWT2DMLI#(n, m, p, l))
+module mkDWT2DMLI(DWT2DMLI#(n, m, p, l, q))
 			provisos (	
 				Add#(l, a__, 7),
 				Div#(n, TMul#(p, TExp#(l)), TDiv#(n, TMul#(p, TExp#(l)))),
@@ -233,12 +233,16 @@ module mkDWT2DMLI(DWT2DMLI#(n, m, p, l))
 	interface Get response;
 		method ActionValue#(Vector#(p, Coeff)) get();
 			let x <- m.response.get();
-			return fromWSample(x);
+			Vector#(p, WSample) y = newVector;
+			for(Integer i=0; i<valueOf(p); i=i+1)begin
+				y[i] = x[i] >> valueOf(q);
+			end
+			return fromWSample(y);
 		endmethod
 	endinterface
 endmodule
 
-module mkIDWT2DMLI(IDWT2DMLI#(n, m, p, l))
+module mkIDWT2DMLI(IDWT2DMLI#(n, m, p, l, q))
 			provisos (	
 				Add#(l, a__, 7),
 				Div#(n, TMul#(p, TExp#(l)), TDiv#(n, TMul#(p, TExp#(l)))),
@@ -251,7 +255,13 @@ module mkIDWT2DMLI(IDWT2DMLI#(n, m, p, l))
 				);
 	DWT2DML#(n, m, p, l) m <- mkIDWT2DML;
 	interface Put request;
-		method Action put(Vector#(p, Coeff) x)=m.request.put(toWSample(x));
+		method Action put(Vector#(p, Coeff) x);
+			Vector#(p, WSample) y = newVector;
+			for(Integer i=0; i<valueOf(p); i=i+1)begin
+				y[i] = fromInt(x[i]) << valueOf(q);
+			end
+			m.request.put(y);
+		endmethod
 	endinterface
 	interface Get response;
 		method ActionValue#(Vector#(p, Sample)) get();

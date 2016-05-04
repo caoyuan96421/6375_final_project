@@ -1,4 +1,4 @@
-function [ coeffs,bits ] = huffman_decode( bytes, expected)
+function [ coeffs,bits ] = huffman_decode( bytes, maxlen, expected)
 bits = reshape(de2bi(bytes)',1,[]);
 lenBits = length(bits);
 coeffs = zeros(1, expected);
@@ -35,23 +35,24 @@ while ( i < lenBits)
         coeffs(j) = -4;
         i = i + 6;
     elseif (bits(i:i+5) == [1 1 1 1 1 1])
-        test = bi2de(int16(bits(i+6:i+17)), 'left-msb');
-        if (test > 2^11)
-            test = test - 2^12;
+        test = bi2de(int16(bits(i+6:i+5+maxlen)), 'left-msb');
+        if (test > 2^(maxlen-1))
+            test = test - 2^maxlen;
         end
         %new_coeff = typecast(uint16(bin2dec(num2str(bits(i+6:i+17)))),'int16')
         coeffs(j) = test;
-        i = i + 18;
+        i = i + 6 + maxlen;
     else
-        error = ['Error! at i =' int2str(i)]
-        c1 = mat2str(bits(i:i+1))
-        c2 = mat2str(bits(i:i+3))
-        c3 = mat2str(bits(i:i+4))
-        c4 = mat2str(bits(i:i+5))
-        cN = typecast(uint16(bin2dec(fliplr(num2str(bits(i+6:i+21))))),'int16')
+        fprintf('Error! at i = %d', int2str(i));
+%         c1 = mat2str(bits(i:i+1))
+%         c2 = mat2str(bits(i:i+3))
+%         c3 = mat2str(bits(i:i+4))
+%         c4 = mat2str(bits(i:i+5))
+%         cN = typecast(uint16(bin2dec(fliplr(num2str(bits(i+6:i+21))))),'int16')
         i = lenBits;
     end
     
     j = j+1;
 end
+fprintf('Decoder decoded %d samples\n',j-1);
 end
