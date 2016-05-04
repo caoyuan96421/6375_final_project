@@ -1,7 +1,7 @@
 
 N = [512,512];
 
-f = fopen('in.pcm','rb');
+f = fopen('out.pcm','rb');
 bytes = fread(f);
 fclose(f);
 bytes = uint8(bytes);
